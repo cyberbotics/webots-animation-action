@@ -13,7 +13,7 @@ def main():
     robot.animationStartRecording(args.output)
 
     step_i = 0
-    n_steps = (1e3 * args.duration) / robot.getBasicTimeStep()
+    n_steps = (1000 * args.duration) / robot.getBasicTimeStep()
     while robot.step(timestep) != -1 and step_i < n_steps:
         step_i += 1
 

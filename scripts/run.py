@@ -117,7 +117,7 @@ def generate_animation_list(animation_config):
 
     template = template.replace('{ WORLD_LIST_PLACEHOLDER }', str(worlds))
 
-    with open(os.path.join('animation', 'index.html'), 'w') as f:
+    with open(os.path.join('/tmp/animation', 'index.html'), 'w') as f:
         f.write(template)
 
 
@@ -131,7 +131,7 @@ def generate_animation(animation_config):
             animation_recorder_vrml = generate_animation_recorder_vrml(
                 duration=world['duration'],
                 output=os.path.join(os.path.abspath(
-                    '.'), 'animation', world_name + '.html')
+                    '.'), '/tmp/animation', world_name + '.html')
             )
 
             with open(world_file, 'r') as f:

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # Copyright 1996-2020 Cyberbotics Ltd.
 #
@@ -14,12 +14,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from glob import glob
-import yaml
 import os
 import re
+import subprocess
 import collections
-from command import Command
+from glob import glob
+import yaml
 
 
 def dict_merge(dct, merge_dct):
@@ -57,7 +57,6 @@ def load_config():
 
     # Put user's config on top of default config
     dict_merge(config, user_config)
-
     return config
 
 
@@ -94,20 +93,16 @@ def generate_animation_list(animation_config):
                 world_content = f.read()
 
                 # Parse `title`
-                title_expr = re.compile(
-                    r'title\s\"(.*?)\"', re.MULTILINE | re.DOTALL)
+                title_expr = re.compile(r'title\s\"(.*?)\"', re.MULTILINE | re.DOTALL)
                 title_re = re.findall(title_expr, world_content)
                 if title_re:
                     title = title_re[0]
 
                 # Parse `info`
-                info_expr = re.compile(
-                    r'info\s\[(.*?)\]', re.MULTILINE | re.DOTALL)
+                info_expr = re.compile(r'info\s\[(.*?)\]', re.MULTILINE | re.DOTALL)
                 info_re = re.findall(info_expr, world_content)
                 if info_re:
-                    description = ' '.join(
-                        [x.strip().strip('"') for x in info_re[0].split('\n') if x.strip().strip('"')]
-                    )
+                    description = ' '.join([x.strip().strip('"') for x in info_re[0].split('\n') if x.strip().strip('"')])
 
             worlds.append({
                 'title': title,
@@ -130,8 +125,7 @@ def generate_animation(animation_config):
             world_name = get_world_name_from_path(world_file)
             animation_recorder_vrml = generate_animation_recorder_vrml(
                 duration=world['duration'],
-                output=os.path.join(os.path.abspath(
-                    '.'), '/tmp/animation', world_name + '.html')
+                output=os.path.join(os.path.abspath('.'), '/tmp/animation', world_name + '.html')
             )
 
             with open(world_file, 'r') as f:
@@ -140,9 +134,8 @@ def generate_animation(animation_config):
             with open(world_file, 'w') as f:
                 f.write(world_content + animation_recorder_vrml)
 
-            command = Command(
-                f"xvfb-run webots --stdout --stderr --batch --mode=fast {world_file}")
-            command.run()
+            out = subprocess.check_output(['xvfb-run', 'webots', '--stdout', '--stderr', '--batch', '--mode=fast', world_file])
+            print(out)
 
             with open(world_file, 'w') as f:
                 f.write(world_content)

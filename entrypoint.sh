@@ -3,8 +3,11 @@
 mkdir /tmp/animation
 python3 /bin/scripts/run.py
 
-git config --global user.name ${GITHUB_ACTOR}	
-git config --global user.email ${GITHUB_ACTOR}@github.com
+NAME=$(curl https://api.github.com/users/${GITHUB_ACTOR} | jq -r .name)
+ID=$(curl https://api.github.com/users/${GITHUB_ACTOR} | jq -r .id)
+
+git config --global user.name ${NAME}	
+git config --global user.email ${ID}+${GITHUB_ACTOR}@users.noreply.github.com
 git reset --hard
 git fetch
 git checkout gh-pages || git checkout -b gh-pages

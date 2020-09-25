@@ -2,6 +2,10 @@
 
 This GitHub action creates a Webots animation of a simulation and publishes it to GitHub pages.
 
+<p align="center">
+  <img src="./assets/cover.png">
+</p>
+
 ## Workflow
 
 Here is a simple GitHub workflow snippet which utilizes the action:

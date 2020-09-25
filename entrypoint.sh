@@ -14,5 +14,5 @@ git checkout gh-pages || git checkout -b gh-pages
 rm -rf $(ls -aI '.git') 2> /dev/null
 cp -r /tmp/animation/* .
 git add -A
-git commit -m "Update simulation"	
+git commit -m "Updated animation"
 git push "https://$GITHUB_ACTOR:$GITHUB_TOKEN@github.com/$GITHUB_REPOSITORY"

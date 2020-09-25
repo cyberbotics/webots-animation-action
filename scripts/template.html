@@ -44,14 +44,8 @@
     <script src="https://www.cyberbotics.com/wwi/R2020b/webots.min.js"></script>
     <script>
         const WORLD_LIST = { WORLD_LIST_PLACEHOLDER };
-        /*
-        const WORLD_LIST = [  
-            { description: 'Item description', title: 'Item title', name: 'world_name' },
-            { description: 'Item description', title: 'Item title', name: 'world_name' }
-        ];
-        */
-        var view = null;
-        var currentWorld = null;
+        let view = null;
+        let currentWorld = null;
 
         function showWorld(worldName) {
             if (view) {

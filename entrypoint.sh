@@ -8,7 +8,7 @@ git config --global user.email ${GITHUB_ACTOR}@github.com
 git reset --hard
 git fetch
 git checkout gh-pages || git checkout -b gh-pages
-rm -rf * .*
+rm -rf * .* 2> /dev/null
 cp -r /tmp/animation/* .
 git add -A
 git commit -m "Update simulation"	

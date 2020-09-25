@@ -2,131 +2,131 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title>Webots Simulation Preview</title>
-    <link type="text/css" href="https://www.cyberbotics.com/jquery-ui/1.11.4/jquery-ui.min.css" rel="stylesheet" />
-    <link type="text/css" href="https://www.cyberbotics.com/wwi/R2020b/wwi.css" rel="stylesheet" />
-    <style>
-        html,
-        body {
-            padding: 0;
-            margin: 0;
-            height: 100%;
-            width: 100%;
-            display: flex;
-            flex-flow: row;
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Webots Simulation Preview</title>
+  <link type="text/css" href="https://www.cyberbotics.com/jquery-ui/1.11.4/jquery-ui.min.css" rel="stylesheet" />
+  <link type="text/css" href="https://www.cyberbotics.com/wwi/R2020b/wwi.css" rel="stylesheet" />
+  <style>
+    html,
+    body {
+      padding: 0;
+      margin: 0;
+      height: 100%;
+      width: 100%;
+      display: flex;
+      flex-flow: row;
+    }
+
+    #view3d {
+      flex: 1;
+      background-color: black;
+    }
+
+    #sidebar {
+      padding: 12px;
+      max-width: 220px;
+    }
+
+    .simulation-item {
+      margin: 12px 0;
+    }
+
+    .simulation-item h3,
+    .simulation-item p {
+      margin: 0;
+    }
+  </style>
+  <script src="https://www.cyberbotics.com/jquery/1.11.3/jquery.min.js"></script>
+  <script src="https://www.cyberbotics.com/jquery-ui/1.11.4/jquery-ui.min.js"></script>
+  <script src="https://www.cyberbotics.com/jquery-dialogextend/2.0.4/jquery.dialogextend.min.js"></script>
+  <script src="https://www.cyberbotics.com/ace/1.2.0/ace.js"></script>
+  <script src="https://www.cyberbotics.com/wwi/R2020b/webots.min.js"></script>
+  <script>
+    const WORLD_LIST = { WORLD_LIST_PLACEHOLDER };
+    let view = null;
+    let currentWorld = null;
+
+    function showWorld(worldName) {
+      if (view) {
+        view.resetSimulation();
+        view.destroyWorld();
+        view.close();
+        view = null;
+        document.getElementById("view3d").innerHTML = null;
+      }
+      if (!view) {
+        view = new webots.View(document.getElementById("view3d"));
+      }
+
+      view.open(worldName + ".x3d");
+      view.setAnimation(worldName + ".json", "play", true);
+    }
+
+    function onWorldClicked(e, worldName) {
+      e.preventDefault();
+      window.location.replace('#' + worldName);
+    }
+
+    function createSidebarItems() {
+      const sidebar = document.getElementById('sidebar');
+      for (const world of WORLD_LIST) {
+        sidebar.innerHTML += `
+          <div class="simulation-item">
+            <a href="javascript:void(0)" onclick="onWorldClicked(event, '${world.name}')">
+              <h3>${world.title} (${world.name})</h3>
+            </a>
+            <p>${world.description}</p>
+            <a href="${world.name}.html" target="_blank">[extern]</a>
+          </div>
+        `;
+      }
+    }
+
+    function getWorldFromHash() {
+      if (window.location.hash) {
+        const worldName = window.location.hash.substring(1);
+        const matchingWorld = WORLD_LIST.find(element => element.name == worldName);
+        if (matchingWorld) {
+          return matchingWorld;
         }
+        return null;
+      }
+      return null;
+    }
 
-        #view3d {
-            flex: 1;
-            background-color: black;
-        }
+    function showWorldFromHash() {
+      currentWorld = getWorldFromHash();
+      if (!currentWorld) {
+        window.location.replace('#' + WORLD_LIST[0].name);
+        return;
+      }
+      console.log(currentWorld);
+      showWorld(currentWorld.name);
+    }
 
-        #sidebar {
-            padding: 12px;
-            max-width: 220px;
-        }
+    function init() {
+      createSidebarItems();
+      showWorldFromHash();
+    }
 
-        .simulation-item {
-            margin: 12px 0;
-        }
+    function hashChanged() {
+      showWorldFromHash();
+    }
 
-        .simulation-item h3,
-        .simulation-item p {
-            margin: 0;
-        }
-    </style>
-    <script src="https://www.cyberbotics.com/jquery/1.11.3/jquery.min.js"></script>
-    <script src="https://www.cyberbotics.com/jquery-ui/1.11.4/jquery-ui.min.js"></script>
-    <script src="https://www.cyberbotics.com/jquery-dialogextend/2.0.4/jquery.dialogextend.min.js"></script>
-    <script src="https://www.cyberbotics.com/ace/1.2.0/ace.js"></script>
-    <script src="https://www.cyberbotics.com/wwi/R2020b/webots.min.js"></script>
-    <script>
-        const WORLD_LIST = { WORLD_LIST_PLACEHOLDER };
-        let view = null;
-        let currentWorld = null;
+    window.addEventListener("load", init, false);
+    window.addEventListener('hashchange', hashChanged);
 
-        function showWorld(worldName) {
-            if (view) {
-                view.resetSimulation();
-                view.destroyWorld();
-                view.close();
-                view = null;
-                document.getElementById("view3d").innerHTML = null;
-            }
-            if (!view) {
-                view = new webots.View(document.getElementById("view3d"));
-            }
-            
-            view.open(worldName + ".x3d");
-            view.setAnimation(worldName + ".json", "play", true);
-        }
-
-        function onWorldClicked(e, worldName) {
-            e.preventDefault();
-            window.location.replace('#' + worldName);
-        }
-
-        function createSidebarItems() {
-            const sidebar = document.getElementById('sidebar');
-            for (const world of WORLD_LIST) {
-                sidebar.innerHTML += `
-                    <div class="simulation-item">
-                        <a href="javascript:void(0)" onclick="onWorldClicked(event, '${world.name}')">
-                            <h3>${world.title} (${world.name})</h3>
-                        </a>
-                        <p>${world.description}</p>
-                        <a href="${world.name}.html" target="_blank">[extern]</a>
-                    </div>
-                `;
-            }
-        }
-
-        function getWorldFromHash() {
-            if (window.location.hash) {
-                const worldName = window.location.hash.substring(1);
-                const matchingWorld = WORLD_LIST.find(element => element.name == worldName);
-                if (matchingWorld) {
-                    return matchingWorld;
-                }
-                return null;
-            }
-            return null;
-        }
-
-        function showWorldFromHash() {
-            currentWorld = getWorldFromHash();
-            if (!currentWorld) {
-                window.location.replace('#' + WORLD_LIST[0].name);
-                return;
-            }
-            console.log(currentWorld);
-            showWorld(currentWorld.name);
-        }
-
-        function init() {
-            createSidebarItems();
-            showWorldFromHash();
-        }
-
-        function hashChanged() {
-            showWorldFromHash();
-        }
-
-        window.addEventListener("load", init, false);
-        window.addEventListener('hashchange', hashChanged);
-
-        if (location.protocol == "file:" && (!!window.chrome && !!window.chrome.webstore))
-            alert("Webots HTML5 Models and Animations cannot be loaded locally on Google Chrome, as Chrome does not support cross-origin requests using the file:// protocol.");
-    </script>
+    if (location.protocol == "file:" && (!!window.chrome && !!window.chrome.webstore))
+      alert("Webots HTML5 Models and Animations cannot be loaded locally on Google Chrome, as Chrome does not support cross-origin requests using the file:// protocol.");
+  </script>
 </head>
 
 <body>
-    <div id="view3d"></div>
-    <div id="sidebar">
-        <h2>List of simulations</h2>
-    </div>
+  <div id="view3d"></div>
+  <div id="sidebar">
+    <h2>List of simulations</h2>
+  </div>
 </body>
 
 </html>

@@ -6,6 +6,10 @@ This GitHub action creates a Webots animation of a simulation and publishes it t
   <img src="./assets/cover.png">
 </p>
 
+
+After each commit, Webots simulation will be recorded and published to `<username>.github.io/<repository>` as X3D animation.
+In your browser, you can move around and zoom while the animation is playing.
+
 ## Workflow
 
 Here is a simple GitHub workflow snippet which utilizes the action:
@@ -27,4 +31,4 @@ jobs:
 
 ## Examples
 
-You can check [Webots Animation Template](https://github.com/cyberbotics/webots-animation-template/) repository.
+Check out [Webots Animation Template](https://github.com/cyberbotics/webots-animation-template/) repository.

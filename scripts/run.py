@@ -135,7 +135,7 @@ def generate_animation(animation_config):
                 f.write(world_content + animation_recorder_vrml)
 
             out = subprocess.check_output(['xvfb-run', 'webots', '--stdout', '--stderr', '--batch', '--mode=fast', world_file])
-            print(out)
+            print(out.decode('utf-8'))
 
             with open(world_file, 'w') as f:
                 f.write(world_content)

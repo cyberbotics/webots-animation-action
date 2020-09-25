@@ -29,6 +29,27 @@ jobs:
 ```
 > You can save the snippet to e.g.: `.github/workflows/record_animation.yml`.
 
+## Configuration
+
+You can create `webots.yaml` configuration file in the root of your repository to fine tune generated animations.
+If the file is not present, the action will automatically generate animations for all files according to the default configuration.
+
+```yaml
+animation:
+  worlds:
+    - file: worlds/tutorial_6.wbt
+      duration: 5
+    - file: worlds/tutorial_1.wbt
+      duration: 10
+```
+
+The world options are:
+
+| **name**   | **description**                             |
+|------------|---------------------------------------------|
+| `file`     | Path to world file (.wbt)                   |
+| `duration` | Animation duration in seconds (default 10s) |
+
 ## Examples
 
 Check out [Webots Animation Template](https://github.com/cyberbotics/webots-animation-template/) repository.

@@ -1,7 +1,7 @@
 name: 'Webots Animation'
 description: 'Build and publish Webots animation on every commit'
 branding:
-  icon: 'box'
+  icon: 'play'
   color: 'red'
 runs:
   using: 'docker'

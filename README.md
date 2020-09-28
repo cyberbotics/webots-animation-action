@@ -16,7 +16,10 @@ Here is a simple GitHub workflow snippet which utilizes the action:
 ```yaml
 name: Record animation
 
-on: [push]
+on:
+  push:
+    branches: 
+      - master
 
 jobs:
   record:

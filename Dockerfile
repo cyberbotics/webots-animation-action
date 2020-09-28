@@ -1,7 +1,7 @@
-FROM cyberbotics/webots 	
+FROM cyberbotics/webots:R2020b-rev1-ubuntu20.04
 
 RUN apt-get update && \ 	
-    apt-get install -y git rsync python3-yaml python3-jinja2 jq
+    apt-get install -y git python3-yaml jq
 
 COPY scripts /bin/scripts
 COPY controllers ${WEBOTS_HOME}/webots/resources/projects/controllers

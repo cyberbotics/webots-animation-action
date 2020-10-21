@@ -23,7 +23,7 @@ cp /bin/scripts/index_header.html index.html
 for dir in */
 do
   dir=${dir%*/}
-  echo "<li><a href=\"${dir}\">${dir}</a></li>"
+  echo "    <li><a href=\"${dir}\">${dir}</a></li>" >> index.html
 done
 cat /bin/scripts/index_footer.html >> index.html
 git add -A

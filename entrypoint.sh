@@ -16,7 +16,7 @@ git config --global user.email "${ID}+${GITHUB_ACTOR}@users.noreply.github.com"
 git reset --hard
 git fetch
 git checkout gh-pages || git checkout -b gh-pages
-rm -rf $(ls -aI '.git') 2> /dev/null
+rm -rf ${BRANCH}/*
 mkdir -p ${BRANCH}
 cp -r /tmp/animation/* ${BRANCH}/
 cp /bin/scripts/index_header.html index.html

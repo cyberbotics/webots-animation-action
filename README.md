@@ -7,7 +7,7 @@ This GitHub action creates a Webots animation of a simulation and publishes it t
 </p>
 
 
-After each commit, Webots simulation will be recorded and published to `<username>.github.io/<repository>` as an X3D animation.
+After each commit, Webots simulation will be recorded and published to `<username>.github.io/<repository>/<branch>` as an X3D animation.
 In your browser, you can move around and zoom while the animation is playing.
 
 ## Workflow

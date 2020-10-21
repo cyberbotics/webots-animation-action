@@ -20,6 +20,7 @@ rm -rf ${BRANCH}/*
 mkdir -p ${BRANCH}
 cp -r /tmp/animation/* ${BRANCH}/
 cp /bin/scripts/index_header.html index.html
+echo "    <li><a href=\"develop\">test</a></li>" >> index.html
 for dir in */
 do
   dir=${dir%*/}

@@ -19,6 +19,13 @@ git checkout gh-pages || git checkout -b gh-pages
 rm -rf $(ls -aI '.git') 2> /dev/null
 mkdir -p ${BRANCH}
 cp -r /tmp/animation/* ${BRANCH}/
+cp /bin/scripts/index_header.html index.html
+for dir in */
+do
+  dir=${dir%*/}
+  echo "<li><a href=\"${dir}\">${dir}</a></li>"
+done
+cat /bin/scripts/index_footer.html >> index.html
 git add -A
 git commit -m "Updated animation"
 git push "https://$GITHUB_ACTOR:$GITHUB_TOKEN@github.com/$GITHUB_REPOSITORY"

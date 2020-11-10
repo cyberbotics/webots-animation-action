@@ -1,10 +1,13 @@
 FROM cyberbotics/webots:R2020b-rev1-ubuntu20.04
 
 RUN apt-get update && \ 	
-    apt-get install -y git
+    apt-get install -y \
+        git \
+        python3-yaml \
+        python3-requests
 
-COPY scripts /bin/scripts
+COPY wb_animation_action /usr/lib/python3/dist-packages/wb_animation_action
 COPY controllers ${WEBOTS_HOME}/webots/resources/projects/controllers
 COPY entrypoint.sh /entrypoint.sh
 
-ENTRYPOINT ["python3 wb_animation_action/action.py"]
+ENTRYPOINT ["/entrypoint.sh"]

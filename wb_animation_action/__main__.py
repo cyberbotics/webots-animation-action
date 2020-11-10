@@ -1,7 +1,7 @@
 import sys
 import os
-import yaml
 import subprocess
+import yaml
 from .animation import generate_animation
 from .competition import generate_competition
 

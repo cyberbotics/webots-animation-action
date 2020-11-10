@@ -4,6 +4,7 @@
 python3 /bin/scripts/execute_init.py
 
 # Test
+export WEBOTS_HOME=/usr/local/webots
 git clone https://github.com/lukicdarkoo/webots-competition-participant-template.git controllers/participant_controller
 cd controllers/contest_manager && make && cd ../../
 

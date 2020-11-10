@@ -1,4 +1,0 @@
-animation:
-  worlds:
-    - file: worlds/*.wbt
-      duration: 10

@@ -73,7 +73,7 @@ def _configure_git():
     username = os.environ['GITHUB_ACTOR']
     user_info = requests.get(f'https://api.github.com/users/{username}').json()
 
-    out = subprocess.check_output(['git', 'config', 'user.name'])
+    out = subprocess.check_output('git config --list | grep user.name', shell=True)
     if not out:
         email = '${}+${}@users.noreply.github.com'.format(user_info, username)
         subprocess.check_output(['git', 'config', '--global', 'user.name', user_info['name']])

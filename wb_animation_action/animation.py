@@ -37,8 +37,7 @@ def _generate_animation_list(worlds_config):
     template = None
 
     # Generate details
-    worlds = [get_world_info(world_config['file'])
-              for world_config in worlds_config.values()]
+    worlds = [get_world_info(world_config['file']) for world_config in worlds_config]
 
     # Write to the template
     template_dir = os.path.dirname(os.path.realpath(__file__))
@@ -63,6 +62,7 @@ def generate_animation_for_world(world_file, duration):
         world_content = f.read()
     with open(world_file, 'w') as f:
         f.write(world_content + animation_recorder_vrml)
+    os.makedirs('/tmp/animation', exist_ok=True)
 
     # Runs simulation in Webots
     out = subprocess.check_output(['xvfb-run', 'webots', '--stdout', '--stderr', '--batch', '--mode=fast', world_file])

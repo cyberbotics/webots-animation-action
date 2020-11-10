@@ -20,11 +20,13 @@ def load_config():
 
 
 def main():
+    # Load config
     config = load_config()
 
     # Fire init-hook (usually dependencies)
-    out = subprocess.check_output(config['init'], shell=True)
-    print(out.decode('utf-8'))
+    if 'init' in config:
+        out = subprocess.check_output(config['init'], shell=True)
+        print(out.decode('utf-8'))
 
     # Continue parsing
     if 'competition' in config:

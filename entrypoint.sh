@@ -3,6 +3,10 @@
 # Install dependencies
 python3 /bin/scripts/execute_init.py
 
+# Test
+git clone https://github.com/lukicdarkoo/webots-competition-participant-template.git controllers/participant_controller
+cd controllers/contest_manager && make
+
 # Generate animation
 mkdir /tmp/animation
 python3 /bin/scripts/generate_animation.py

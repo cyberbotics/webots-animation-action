@@ -108,7 +108,7 @@ def generate_animation(animation_config):
 
     # Push animation to gh-pages
     current_branch_name = os.environ['GITHUB_REF'].split('/')[-1]
-    git_push_directory_to_branch('/tmp/animation', destination_directory=current_branch_name, destination_branch='gh-pages', clean=True)
+    git_push_directory_to_branch('/tmp/animation', destination_directory=current_branch_name, clean=True)
 
     # Update branch index list (we assume we are in `gh-pages` branch)
     _generate_branch_index()

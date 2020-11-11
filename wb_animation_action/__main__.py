@@ -29,9 +29,12 @@ def main():
         print(out.decode('utf-8'))
 
     # Continue parsing
-    if 'competition' in config:
-        generate_competition(config['competition'])
-    elif 'animation' in config:
+    if 'type' not in config:
+        print('You have to specify `type` parameter (`demo`, `competition` or `competitor`) in `webots.yaml`')
+
+    if config['type'] == 'competition':
+        generate_competition(config)
+    elif config['type'] == 'demo':
         generate_animation(config['animation'])
 
 

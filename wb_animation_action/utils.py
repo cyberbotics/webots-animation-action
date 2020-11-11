@@ -112,3 +112,10 @@ def git_push_directory_to_branch(source_directory, destination_directory='.', de
 
     subprocess.check_output(f'cp -r {source_directory}/* {destination_directory}', shell=True)
     git_push()
+
+
+def compile_controllers():
+    for path in glob('controllers/*'):
+        if os.path.isdir(path):
+            if os.path.isfile(os.path.join(path, 'Makefile')):
+                subprocess.check_output(f'cd {path} && make', shell=True)

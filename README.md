@@ -16,11 +16,6 @@ Here is a simple GitHub workflow snippet which utilizes the action:
 ```yaml
 name: Record animation
 
-on:
-  push:
-    branches: 
-      - master
-
 jobs:
   record:
     runs-on: ubuntu-latest
@@ -34,10 +29,17 @@ jobs:
 
 ## Configuration
 
+### Demonstration
+
 You can create `webots.yaml` configuration file in the root of your repository to fine tune generated animations.
 If the file is not present, the action will automatically generate animations for all files according to the default configuration.
 
 ```yaml
+type: demo
+init: |
+  apt install -y \
+    python3-numpy \
+    python3-opencv
 animation:
   worlds:
     - file: worlds/tutorial_6.wbt
@@ -46,12 +48,33 @@ animation:
       duration: 10
 ```
 
-The world options are:
+The options are:
 
-| **name**   | **description**                             |
-|------------|---------------------------------------------|
-| `file`     | Path to world file (.wbt)                   |
-| `duration` | Animation duration in seconds (default 10s) |
+| **name**                      | **description**                                             |
+|-------------------------------|-------------------------------------------------------------|
+| `init`                        | Init hook used for configuruing and installing dependcies   |
+| `type`                        | Project type, can be `demo`, `competition` and `competitor` |
+| `animation`                   | Generates Webots animation and publishes to `gh-pages`      |
+| `animation.worlds[].file`     | Path to world file (.wbt)                                   |
+| `animation.worlds[].duration` | Animation duration in seconds (default 10s)                 |
+
+### Competition
+
+#### Organizer
+
+```yaml
+type: competition
+world: worlds/ratslife_round.wbt
+```
+
+Limitations:
+- The opposing robots have to have `DEF` field set to `R1` and `R2`.
+
+#### Competitor
+```yaml
+type: competitor
+competition: https://github.com/username/competition
+```
 
 ## Examples
 

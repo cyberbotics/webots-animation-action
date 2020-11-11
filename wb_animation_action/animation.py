@@ -17,7 +17,7 @@
 import os
 from glob import glob
 import subprocess
-from .utils import get_world_info, expand_world_list, git_push_directory_to_branch, git_push
+from .utils import get_world_info, expand_world_list, git_push_directory_to_branch, git_push, compile_controllers
 
 
 def _generate_animation_recorder_vrml(duration, output):
@@ -99,9 +99,9 @@ def generate_animation(animation_config):
     animation_config['worlds'] = expand_world_list(animation_config['worlds'])
 
     # Generate animation for each world
+    compile_controllers()
     for world_config in animation_config['worlds']:
-        generate_animation_for_world(
-            world_config['file'], world_config['duration'])
+        generate_animation_for_world(world_config['file'], world_config['duration'])
 
     # Generates list of animations
     _generate_animation_page(animation_config['worlds'])

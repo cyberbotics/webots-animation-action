@@ -15,8 +15,9 @@
 # limitations under the License.
 
 import os
+from glob import glob
 import subprocess
-from .utils import get_world_info, expand_world_list, git_push_to_branch
+from .utils import get_world_info, expand_world_list, git_push_directory_to_branch, git_push
 
 
 def _generate_animation_recorder_vrml(duration, output):
@@ -33,7 +34,7 @@ def _generate_animation_recorder_vrml(duration, output):
     )
 
 
-def _generate_animation_list(worlds_config):
+def _generate_animation_page(worlds_config):
     template = None
 
     # Generate details
@@ -46,6 +47,17 @@ def _generate_animation_list(worlds_config):
     template = template.replace('{ WORLD_LIST_PLACEHOLDER }', str(worlds))
     with open(os.path.join('/tmp/animation', 'index.html'), 'w') as f:
         f.write(template)
+
+
+def _generate_branch_index():
+    template_dir = os.path.dirname(os.path.realpath(__file__))
+    with open(os.path.join(template_dir, 'resources', 'animation-list.template.html'), 'r') as f:
+        template = f.read()
+    worlds = [f'<li><a href="{path}">{path}</a></li>' for path in glob('*') if os.path.isdir(path)]
+    template = template.replace('{ BRANCH_LIST_PLACEHOLDER }', '\n'.join(worlds))
+    with open('index.html', 'w') as f:
+        f.write(template)
+    git_push()
 
 
 def generate_animation_for_world(world_file, duration):
@@ -92,8 +104,11 @@ def generate_animation(animation_config):
             world_config['file'], world_config['duration'])
 
     # Generates list of animations
-    _generate_animation_list(animation_config['worlds'])
+    _generate_animation_page(animation_config['worlds'])
 
-    # Push to gh-pages
-    current_branch_name = os.environ['GITHUB_REF'].split('/')
-    git_push_to_branch('/tmp/animation', destination_directory=current_branch_name, destination_branch='gh-pages')
+    # Push animation to gh-pages
+    current_branch_name = os.environ['GITHUB_REF'].split('/')[-1]
+    git_push_directory_to_branch('/tmp/animation', destination_directory=current_branch_name, destination_branch='gh-pages', clean=True)
+
+    # Update branch index list (we assume we are in `gh-pages` branch)
+    _generate_branch_index()

@@ -73,20 +73,32 @@ def _configure_git():
     username = os.environ['GITHUB_ACTOR']
     user_info = requests.get(f'https://api.github.com/users/{username}').json()
 
-    out = subprocess.check_output('git config --list | grep user.name', shell=True)
-    if not out:
-        email = '${}+${}@users.noreply.github.com'.format(user_info, username)
+    result = subprocess.run('git config --list | grep user.name', shell=True, check=False)
+    if result.returncode != 0:
+        email = '${}+${}@users.noreply.github.com'.format(user_info['id'], username)
         subprocess.check_output(['git', 'config', '--global', 'user.name', user_info['name']])
         subprocess.check_output(['git', 'config', '--global', 'user.email', email])
 
 
-def git_push_to_branch(source_directory, destination_directory='', destination_branch='gh-pages'):
-    """Publishes an arbitrary dictionary to a new branch (usually `gh-pages`)."""
+def git_push(message='Updated animation'):
+    _configure_git()
+
     github_repository = 'https://{}:{}@github.com/{}'.format(
         os.environ['GITHUB_ACTOR'],
         os.environ['GITHUB_TOKEN'],
         os.environ['GITHUB_REPOSITORY']
     )
+
+    subprocess.check_output(['git', 'add', '-A'])
+    subprocess.check_output(['git', 'commit', '-m', message])
+    if not is_debug():
+        subprocess.check_output(['git', 'push', github_repository])
+    else:
+        print(f'@ git push {github_repository}')
+
+
+def git_push_directory_to_branch(source_directory, destination_directory='.', destination_branch='gh-pages', clean=False):
+    """Publishes an arbitrary dictionary to a new branch (usually `gh-pages`)."""
 
     _configure_git()
 
@@ -94,13 +106,9 @@ def git_push_to_branch(source_directory, destination_directory='', destination_b
     subprocess.check_output(['git', 'fetch'])
     subprocess.check_output(f'git checkout {destination_branch} || git checkout -b {destination_branch}', shell=True)
 
-    subprocess.check_output(['rm', '-rf', destination_directory + '/*'])
-    subprocess.check_output(['mkdir', '-p', destination_directory])
+    os.makedirs(destination_directory, exist_ok=True)
+    if clean:
+        subprocess.check_output(['rm', '-rf', f'{destination_directory}/*'])
 
-    subprocess.check_output(['cp', '-r', source_directory + '*', destination_directory])
-    subprocess.check_output(['git', 'add', '-A'])
-    subprocess.check_output(['git', 'commit', '-m', 'Updated animation'])
-    if not is_debug():
-        subprocess.check_output(['git', 'push', github_repository])
-    else:
-        print(f'@ git push {github_repository}')
+    subprocess.check_output(f'cp -r {source_directory}/* {destination_directory}', shell=True)
+    git_push()

@@ -14,8 +14,8 @@ git clone https://github.com/cyberbotics/webots-animation-template.git $HOME/web
 Run:
 ```bash
 docker run \
-    -v $HOME/webots-animation-template:/root \
-    -w /root \
+    -v $HOME/webots-animation-template:/root/repo \
+    -w /root/repo \
     -e DEBUG=true \
     -it webots-animation-action
 ```

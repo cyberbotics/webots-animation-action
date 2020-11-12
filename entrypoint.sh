@@ -7,4 +7,6 @@ if [ ! -z "${DEBUG}" ]; then
     export GITHUB_REPOSITORY='cyberbotics/webots-animation-template'
 fi
 
+echo "[START] ${GITHUB_TOKEN} [END]"
+
 python3 -m wb_animation_action

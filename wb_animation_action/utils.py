@@ -17,6 +17,7 @@
 import subprocess
 import os
 import re
+import shutil
 from glob import glob
 import requests
 
@@ -114,12 +115,13 @@ def git_push_directory_to_branch(source_directory, destination_directory='.', de
     _configure_git()
 
     subprocess.check_output(['git', 'reset', '--hard'])
-    subprocess.check_output(['git', 'fetch'])
     subprocess.check_output(f'git checkout {destination_branch} || git checkout -b {destination_branch}', shell=True)
 
     os.makedirs(destination_directory, exist_ok=True)
     if clean:
-        subprocess.check_output(['rm', '-rf', f'{destination_directory}/*'])
+        for path in glob(f'{destination_directory}/*'):
+            if '.git/' not in path:
+                remove_anything(path)
 
     subprocess.check_output(f'cp -r {source_directory}/* {destination_directory}', shell=True)
     git_push()
@@ -130,3 +132,13 @@ def compile_controllers():
         if os.path.isdir(path):
             if os.path.isfile(os.path.join(path, 'Makefile')):
                 subprocess.check_output(f'cd {path} && make', shell=True)
+
+
+def remove_anything(path):
+    """Deletes whatever the `path` value is, folder or file."""
+    if os.path.isfile(path) or os.path.islink(path):
+        os.unlink(path)
+    elif os.path.isdir(path):
+        shutil.rmtree(path)
+    else:
+        print(f'`{path}` is not folder or file!')

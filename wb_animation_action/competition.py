@@ -22,6 +22,9 @@ from .animation import generate_animation_for_world
 from .utils import compile_controllers, git_push_directory_to_branch
 
 
+MATCH_TIMEOUT = 15 * 60
+
+
 class Competitor:
     def __init__(self, git, rank):
         self.git = git
@@ -85,13 +88,13 @@ def generate_competition(competition_config):
         _set_controller_name_to_world(world_file, 'R0', competitor_a.controller_name)
         _set_controller_name_to_world(world_file, 'R1', competitor_b.controller_name)
 
-        # Run duel
+        # Run match
         destination_directory = os.path.join(
             '/tmp',
             'animation',
             f'{competitor_a.controller_name}_vs_{competitor_b.controller_name}'
         )
-        generate_animation_for_world(world_file, 15 * 60, destination_directory=destination_directory)
+        generate_animation_for_world(world_file, MATCH_TIMEOUT, destination_directory=destination_directory)
 
         # Update ranks
         winner = None

@@ -25,11 +25,6 @@ def is_debug():
     return 'DEBUG' in os.environ and os.environ['DEBUG']
 
 
-def install_dependencies(init):
-    out = subprocess.check_output(init, shell=True)
-    print(out.decode('utf-8'))
-
-
 def get_world_info(world_path):
     """Returns dictionary with details about the given Webots world."""
     description = ''

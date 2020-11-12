@@ -16,22 +16,26 @@
 
 import re
 import os
+import json
 import random
 import string
 import subprocess
 from .animation import generate_animation_for_world
-from .utils import compile_controllers
+from .utils import compile_controllers, git_push_directory_to_branch
 
 
 class Competitor:
     def __init__(self, git, rank):
         self.git = git
         self.rank = rank
-        self.controller_name = self.__set_random_controller_name()
+        self.controller_name = self.__get_random_controller_name()
 
-    def __set_random_controller_name(self, size=10):
+    def __get_random_controller_name(self, size=10):
         chars = string.ascii_uppercase + string.digits + string.ascii_lowercase
         return 'wb_' + ''.join(random.choice(chars) for _ in range(size))
+
+    def get_dict(self):
+        return {'git': self.git, 'rank': self.rank}
 
 
 def _get_competitors():
@@ -68,24 +72,35 @@ def _clone_controllers(competitors):
 
 def generate_competition(competition_config):
     world_file = competition_config['world']
-    all_competitors = _get_competitors()
+    competitors = _get_competitors()
 
     # Prepare controllers
-    _clone_controllers(all_competitors)
+    _clone_controllers(competitors)
     compile_controllers()
 
-    lower_competitor_index = len(all_competitors) - 1
+    lower_competitor_index = len(competitors) - 1
     while lower_competitor_index > 0:
         # Add two participants to the world
-        _set_controller_name_to_world(world_file, 'R0', all_competitors[lower_competitor_index].controller_name)
-        _set_controller_name_to_world(world_file, 'R1', all_competitors[lower_competitor_index - 1].controller_name)
+        _set_controller_name_to_world(world_file, 'R0', competitors[lower_competitor_index].controller_name)
+        _set_controller_name_to_world(world_file, 'R1', competitors[lower_competitor_index - 1].controller_name)
 
         # Run duel
         generate_animation_for_world(world_file, 15 * 60)
 
-        # Update ranks, check who won
-        all_competitors[lower_competitor_index], all_competitors[lower_competitor_index - 1] =\
-            all_competitors[lower_competitor_index - 1], all_competitors[lower_competitor_index]
+        # Update ranks
+        winner = None
+        with open('/tmp/winner.txt', 'r') as f:
+            winner = f.read()
+        if winner == 1:
+            competitors[lower_competitor_index].rank -= 1
+            competitors[lower_competitor_index - 1].rank += 1
+            competitors = sorted(competitors, lambda c: c.rank)
 
         # Prepare next iteration
         lower_competitor_index -= 1
+
+    # Write results
+    os.makedirs('/tmp/results', exist_ok=True)
+    with open(os.path.join('/tmp/results', 'results.json'), 'w') as f:
+        f.write(json.dumps([c.get_dict() for c in competitors]))
+    git_push_directory_to_branch('/tmp/results')

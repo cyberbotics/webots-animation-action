@@ -92,7 +92,7 @@ def _configure_git():
         subprocess.check_output(['git', 'config', '--global', 'user.email', email])
 
 
-def git_push(message='Updated animation'):
+def git_push(message='Updated animation', force=True):
     _configure_git()
 
     github_repository = 'https://{}:{}@github.com/{}'.format(
@@ -104,7 +104,11 @@ def git_push(message='Updated animation'):
     subprocess.check_output(['git', 'add', '-A'])
     subprocess.check_output(['git', 'commit', '-m', message])
     if not is_debug():
-        subprocess.check_output(['git', 'push', github_repository])
+        params = ['git', 'push']
+        if force:
+            params += ['-f']
+        params += [github_repository]
+        subprocess.check_output(params)
     else:
         print(f'@ git push {github_repository}')
 

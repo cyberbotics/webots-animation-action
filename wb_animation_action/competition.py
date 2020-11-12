@@ -17,6 +17,8 @@
 import re
 import os
 import json
+import random
+import string
 import subprocess
 from .animation import generate_animation_for_world
 from .utils import compile_controllers, git_push_directory_to_branch
@@ -29,11 +31,13 @@ class Competitor:
     def __init__(self, git, rank):
         self.git = git
         self.rank = rank
+        self.controller_name = self.__get_controller_name()
 
-    @property
-    def controller_name(self):
+    def __get_controller_name(self):
+        chars = string.ascii_uppercase + string.digits + string.ascii_lowercase
+        hash_string = ''.join(random.choice(chars) for _ in range(5))
         username, repository = re.findall(r'https:\/\/github\.com\/(.*?)\/(.*)', self.git)[0]
-        return f'wb_{username}-{repository}'
+        return f'wb_{username}_{repository}_{hash_string}'
 
     def get_dict(self):
         return {'git': self.git, 'rank': self.rank}

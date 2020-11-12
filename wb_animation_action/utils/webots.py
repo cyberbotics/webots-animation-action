@@ -14,16 +14,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
 import subprocess
 import os
 import re
-import shutil
 from glob import glob
-import requests
-
-
-def is_debug():
-    return 'DEBUG' in os.environ and os.environ['DEBUG']
 
 
 def get_world_info(world_path):
@@ -81,68 +76,8 @@ def expand_world_list(world_list):
     return expanded_world_list
 
 
-def _configure_git():
-    username = os.environ['GITHUB_ACTOR']
-    user_info = requests.get(f'https://api.github.com/users/{username}').json()
-
-    result = subprocess.run('git config --list | grep user.name', shell=True, check=False)
-    if result.returncode != 0:
-        email = '${}+${}@users.noreply.github.com'.format(user_info['id'], username)
-        subprocess.check_output(['git', 'config', '--global', 'user.name', user_info['name']])
-        subprocess.check_output(['git', 'config', '--global', 'user.email', email])
-
-
-def git_push(message='Updated animation', force=True):
-    _configure_git()
-
-    github_repository = 'https://{}:{}@github.com/{}'.format(
-        os.environ['GITHUB_ACTOR'],
-        os.environ['GITHUB_TOKEN'],
-        os.environ['GITHUB_REPOSITORY']
-    )
-
-    subprocess.check_output(['git', 'add', '-A'])
-    subprocess.check_output(['git', 'commit', '-m', message])
-    if not is_debug():
-        params = ['git', 'push']
-        if force:
-            params += ['-f']
-        params += [github_repository]
-        subprocess.check_output(params)
-    else:
-        print(f'@ git push {github_repository}')
-
-
-def git_push_directory_to_branch(source_directory, destination_directory='.', destination_branch='gh-pages', clean=False):
-    """Publishes an arbitrary dictionary to a new branch (usually `gh-pages`)."""
-
-    _configure_git()
-
-    subprocess.check_output(['git', 'reset', '--hard'])
-    subprocess.check_output(f'git checkout {destination_branch} || git checkout -b {destination_branch}', shell=True)
-
-    os.makedirs(destination_directory, exist_ok=True)
-    if clean:
-        for path in glob(f'{destination_directory}/*'):
-            if '.git/' not in path:
-                remove_anything(path)
-
-    subprocess.check_output(f'cp -r {source_directory}/* {destination_directory}', shell=True)
-    git_push()
-
-
 def compile_controllers():
     for path in glob('controllers/*'):
         if os.path.isdir(path):
             if os.path.isfile(os.path.join(path, 'Makefile')):
                 subprocess.check_output(f'cd {path} && make', shell=True)
-
-
-def remove_anything(path):
-    """Deletes whatever the `path` value is, folder or file."""
-    if os.path.isfile(path) or os.path.islink(path):
-        os.unlink(path)
-    elif os.path.isdir(path):
-        shutil.rmtree(path)
-    else:
-        print(f'`{path}` is not folder or file!')

@@ -18,8 +18,8 @@ import sys
 import os
 import subprocess
 import yaml
-from .animation import generate_animation
-from .competition import generate_competition
+from wb_animation_action.animation import generate_animation
+from wb_animation_action.competition import generate_competition
 
 
 def load_config():

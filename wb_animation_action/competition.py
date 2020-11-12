@@ -20,8 +20,9 @@ import json
 import random
 import string
 import subprocess
-from .animation import generate_animation_for_world
-from .utils import compile_controllers, git_push_directory_to_branch
+import wb_animation_action.utils
+from wb_animation_action.animation import generate_animation_for_world
+from wb_animation_action.utils.webots import compile_controllers
 
 
 MATCH_TIMEOUT = 15 * 60
@@ -113,10 +114,10 @@ def generate_competition(competition_config):
         lower_competitor_index -= 1
 
     # Write animation
-    git_push_directory_to_branch('/tmp/animation', clean=True)
+    wb_animation_action.utils.git.push_directory_to_branch('/tmp/animation', clean=True)
 
     # Write results
     os.makedirs('/tmp/results', exist_ok=True)
     with open(os.path.join('/tmp/results', 'results.json'), 'w') as f:
         f.write(json.dumps([c.get_dict() for c in competitors]))
-    git_push_directory_to_branch('/tmp/results')
+    wb_animation_action.utils.git.push_directory_to_branch('/tmp/results')

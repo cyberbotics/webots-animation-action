@@ -24,6 +24,8 @@ jobs:
         uses: actions/checkout@v2
       - name: Record and deploy the animation
         uses: cyberbotics/webots-animation-action@master
+        env: 
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```
 > You can save the snippet to e.g.: `.github/workflows/record_animation.yml`.
 

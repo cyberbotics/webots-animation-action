@@ -17,7 +17,8 @@
 import os
 from glob import glob
 import subprocess
-from .utils import get_world_info, expand_world_list, git_push_directory_to_branch, git_push, compile_controllers
+import wb_animation_action.utils.git
+from wb_animation_action.utils.webots import get_world_info, expand_world_list, compile_controllers
 
 
 def _generate_animation_recorder_vrml(duration, output):
@@ -57,7 +58,7 @@ def _generate_branch_index():
     template = template.replace('{ BRANCH_LIST_PLACEHOLDER }', '\n'.join(worlds))
     with open('index.html', 'w') as f:
         f.write(template)
-    git_push()
+    wb_animation_action.utils.git.push()
 
 
 def generate_animation_for_world(world_file, duration, destination_directory='/tmp/animation'):
@@ -108,7 +109,11 @@ def generate_animation(animation_config):
 
     # Push animation to gh-pages
     current_branch_name = os.environ['GITHUB_REF'].split('/')[-1]
-    git_push_directory_to_branch('/tmp/animation', destination_directory=current_branch_name, clean=True)
+    wb_animation_action.utils.git.push_directory_to_branch(
+        '/tmp/animation',
+        destination_directory=current_branch_name,
+        clean=True
+    )
 
     # Update branch index list (we assume we are in `gh-pages` branch)
     _generate_branch_index()

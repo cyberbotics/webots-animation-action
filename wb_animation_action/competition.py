@@ -17,8 +17,6 @@
 import re
 import os
 import json
-import random
-import string
 import subprocess
 from .animation import generate_animation_for_world
 from .utils import compile_controllers, git_push_directory_to_branch
@@ -28,11 +26,11 @@ class Competitor:
     def __init__(self, git, rank):
         self.git = git
         self.rank = rank
-        self.controller_name = self.__get_random_controller_name()
 
-    def __get_random_controller_name(self, size=10):
-        chars = string.ascii_uppercase + string.digits + string.ascii_lowercase
-        return 'wb_' + ''.join(random.choice(chars) for _ in range(size))
+    @property
+    def controller_name(self):
+        username, repository = re.findall(r'https:\/\/github\.com\/(.*?)\/(.*)', self.git)[0]
+        return f'wb_{username}-{repository}'
 
     def get_dict(self):
         return {'git': self.git, 'rank': self.rank}
@@ -80,24 +78,35 @@ def generate_competition(competition_config):
 
     lower_competitor_index = len(competitors) - 1
     while lower_competitor_index > 0:
+        competitor_a = competitors[lower_competitor_index - 1]
+        competitor_b = competitors[lower_competitor_index]
+
         # Add two participants to the world
-        _set_controller_name_to_world(world_file, 'R0', competitors[lower_competitor_index].controller_name)
-        _set_controller_name_to_world(world_file, 'R1', competitors[lower_competitor_index - 1].controller_name)
+        _set_controller_name_to_world(world_file, 'R0', competitor_a.controller_name)
+        _set_controller_name_to_world(world_file, 'R1', competitor_b.controller_name)
 
         # Run duel
-        generate_animation_for_world(world_file, 15 * 60)
+        destination_directory = os.path.join(
+            '/tmp',
+            'animation',
+            f'{competitor_a.controller_name}_vs_{competitor_b.controller_name}'
+        )
+        generate_animation_for_world(world_file, 15 * 60, destination_directory=destination_directory)
 
         # Update ranks
         winner = None
         with open('/tmp/winner.txt', 'r') as f:
             winner = f.read()
         if winner == 1:
-            competitors[lower_competitor_index].rank -= 1
-            competitors[lower_competitor_index - 1].rank += 1
+            competitor_a.rank -= 1
+            competitor_b.rank += 1
             competitors = sorted(competitors, lambda c: c.rank)
 
         # Prepare next iteration
         lower_competitor_index -= 1
+
+    # Write animation
+    git_push_directory_to_branch('/tmp/animation', clean=True)
 
     # Write results
     os.makedirs('/tmp/results', exist_ok=True)

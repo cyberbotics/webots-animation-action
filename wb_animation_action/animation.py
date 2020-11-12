@@ -60,7 +60,7 @@ def _generate_branch_index():
     git_push()
 
 
-def generate_animation_for_world(world_file, duration):
+def generate_animation_for_world(world_file, duration, destination_directory='/tmp/animation'):
     """Generates animation for world given by `world_file`."""
 
     world_info = get_world_info(world_file)
@@ -68,13 +68,13 @@ def generate_animation_for_world(world_file, duration):
     # Append `animation_recorder` controller
     animation_recorder_vrml = _generate_animation_recorder_vrml(
         duration=duration,
-        output=os.path.join(os.path.abspath('.'), '/tmp/animation', world_info['name'] + '.html')
+        output=os.path.join(os.path.abspath('.'), destination_directory, world_info['name'] + '.html')
     )
     with open(world_file, 'r') as f:
         world_content = f.read()
     with open(world_file, 'w') as f:
         f.write(world_content + animation_recorder_vrml)
-    os.makedirs('/tmp/animation', exist_ok=True)
+    os.makedirs(destination_directory, exist_ok=True)
 
     # Runs simulation in Webots
     out = subprocess.check_output(['xvfb-run', 'webots', '--stdout', '--stderr', '--batch', '--mode=fast', world_file])

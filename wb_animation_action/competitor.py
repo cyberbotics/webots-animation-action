@@ -14,9 +14,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os
 import subprocess
 
 
 def generate_competitor_preview(config):
-    print(config)
+    # Create a desired directory structure
+    subprocess.check_output('gh repo clone {} /tmp/competition'.format(config['competition']), shell=True)
+    os.makedirs('/tmp/comeptition/controllers/participant_controller', exist_ok=True)
+    subprocess.check_output('mv $(ls -A) /tmp/comeptition/controllers/participant_controller')
+    subprocess.check_output('mv $(ls -A /tmp/comeptition) .')
+
     subprocess.check_output('gh issue create --title "I found a bug" --body "Nothing works"', shell=True)

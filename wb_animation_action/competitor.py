@@ -20,9 +20,9 @@ import subprocess
 
 def generate_competitor_preview(config):
     # Create a desired directory structure
-    subprocess.check_output('gh repo clone {} /tmp/competition'.format(config['competition']), shell=True)
+    subprocess.check_output('git clone {} /tmp/competition'.format(config['competition']), shell=True)
     os.makedirs('/tmp/comeptition/controllers/participant_controller', exist_ok=True)
-    subprocess.check_output('mv $(ls -A) /tmp/comeptition/controllers/participant_controller')
-    subprocess.check_output('mv $(ls -A /tmp/comeptition) .')
+    subprocess.check_output('mv $(ls -A) /tmp/comeptition/controllers/participant_controller', shell=True)
+    subprocess.check_output('mv $(ls -A /tmp/comeptition) .', shell=True)
 
     subprocess.check_output('gh issue create --title "I found a bug" --body "Nothing works"', shell=True)

@@ -60,7 +60,14 @@ The options are:
 | `animation.worlds[].file`     | Path to world file (.wbt)                                   |
 | `animation.worlds[].duration` | Animation duration in seconds (default 10s)                 |
 
+#### Example
+Check out [Webots Animation Template](https://github.com/cyberbotics/webots-animation-template/) repository.
+
 ### Competition
+
+> **Warning**: Competitions are under heavy development!
+Documentation is not ready and we do not guarantee any backward compatibility.
+Please contact us directly if you want to set up a competition at `support@cyberbotics.com`.
 
 #### Organizer
 
@@ -77,7 +84,3 @@ Limitations:
 type: competitor
 competition: https://github.com/username/competition
 ```
-
-## Examples
-
-Check out [Webots Animation Template](https://github.com/cyberbotics/webots-animation-template/) repository.

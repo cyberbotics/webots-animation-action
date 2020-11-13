@@ -20,6 +20,7 @@ import subprocess
 import yaml
 from wb_animation_action.animation import generate_animation
 from wb_animation_action.competition import generate_competition
+from wb_animation_action.competitor import generate_competitor_preview
 
 
 def load_config():
@@ -52,6 +53,8 @@ def main():
         generate_competition(config)
     elif config['type'] == 'demo':
         generate_animation(config['animation'])
+    elif config['type'] == 'competitor':
+        generate_competitor_preview(config)
 
 
 if __name__ == "__main__":

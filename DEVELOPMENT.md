@@ -37,3 +37,19 @@ docker run \
     -e DEBUG=true \
     -it webots-animation-action
 ```
+
+### Competitor
+
+Pull a sample project:
+```bash
+git clone https://github.com/lukicdarkoo/webots-competition-participant-template.git $HOME/webots-competition-participant-template
+```
+
+Run:
+```bash
+docker run \
+    -v $HOME/webots-competition-participant-template:/root/repo \
+    -w /root/repo \
+    -e DEBUG=true \
+    -it webots-animation-action
+```

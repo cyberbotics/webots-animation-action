@@ -29,4 +29,4 @@ def generate_competitor_preview(config):
     subprocess.check_output('mv $(ls -A) /tmp/competition/controllers/participant_controller', shell=True)
     subprocess.check_output('mv $(ls -dA /tmp/competition/*) .', shell=True)
 
-    subprocess.check_output(f'gh issue --repo {competition_url} create --title "User {username} wants to compete" --body "CompetitionUrl: {competitor_url}"', shell=True)
+    subprocess.check_output(f'gh issue --repo {competition_url} create --label registration,{username} --title "User {username} wants to compete" --body "CompetitionUrl: {competitor_url}"', shell=True)

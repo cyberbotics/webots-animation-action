@@ -19,10 +19,14 @@ import subprocess
 
 
 def generate_competitor_preview(config):
+    competition_url = config['competition']
+    username = os.environ['GITHUB_ACTOR']
+    competitor_url = os.environ['GITHUB_REPOSITORY']
+    
     # Create a desired directory structure
-    subprocess.check_output('git clone {} /tmp/competition'.format(config['competition']), shell=True)
+    subprocess.check_output(f'git clone {competition_url} /tmp/competition', shell=True)
     os.makedirs('/tmp/competition/controllers/participant_controller', exist_ok=True)
     subprocess.check_output('mv $(ls -A) /tmp/competition/controllers/participant_controller', shell=True)
     subprocess.check_output('mv $(ls -dA /tmp/competition/*) .', shell=True)
 
-    subprocess.check_output('gh issue create --title "I found a bug" --body "Nothing works"', shell=True)
+    subprocess.check_output(f'gh issue --repo {competition_url} create --title "User {username} wants to compete" --body "CompetitionUrl: {competitor_url}"', shell=True)

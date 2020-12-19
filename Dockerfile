@@ -1,4 +1,4 @@
-FROM cyberbotics/webots:R2020b-rev1-ubuntu20.04
+FROM cyberbotics/webots:latest
 
 RUN apt-get update && \ 	
     apt-get install -y git python3-yaml jq

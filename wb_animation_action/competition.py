@@ -79,13 +79,8 @@ def _set_controller_name_to_world(world_file, robot_name, controller_name):
 
 def _clone_controllers(competitors):
     # Clone controller content
-    print(os.environ['DEPLOY_KEY'])
-    print(os.environ['GIT_SSH_COMMAND'])
-    print(subprocess.check_output('cat /tmp/deploy_key', shell=True))
-
     for competitor in competitors:
         if competitor.git is not None:
-            competitor.git = 'git@github.com:lukicdarkoo/webots-competition-participant-template.git'
             controller_path = os.path.join('controllers', competitor.controller_name)
             subprocess.check_output(f"git clone {competitor.git} {controller_path}", shell=True)
 

@@ -47,7 +47,7 @@ class Competitor:
         return f'wb_{self.__get_id()}_{hash_string}'
 
     def get_dict(self):
-        return {'git': self.git, 'rank': self.rank}
+        return {'id': self.__get_id(), 'rank': self.rank}
 
     def __str__(self):
         return self.__get_id()

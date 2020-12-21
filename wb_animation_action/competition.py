@@ -68,7 +68,9 @@ def _clone_controllers(competitors):
         controller_path = os.path.join('controllers', competitor.controller_name)
 
         # Clone controller content
-        subprocess.check_output(['git', 'clone', competitor.git, controller_path])
+        with open('/tmp/deploy_key', 'w') as f:
+            f.write(os.environ['DEPLOY_KEY'])
+        subprocess.check_output(f"GIT_SSH_COMMAND='ssh -i /tmp/deploy_key -o IdentitiesOnly=yes' git clone {competitor.git} {controller_path}", shell=True)
 
         # Update controller's internal name
         python_filename = os.path.join(controller_path, 'participant_controller.py')

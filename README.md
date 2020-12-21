@@ -57,7 +57,7 @@ The options are:
 | `init`                        | Init hook used for configuruing and installing dependcies   |
 | `type`                        | Project type, can be `demo`, `competition` and `competitor` |
 | `animation`                   | Generates Webots animation and publishes to `gh-pages`      |
-| `animation.worlds[].file`     | Path to world file (.wbt)                                   |
+| `animation.worlds[].file`     | Path to the world file (.wbt)                               |
 | `animation.worlds[].duration` | Animation duration in seconds (default 10s)                 |
 
 #### Example

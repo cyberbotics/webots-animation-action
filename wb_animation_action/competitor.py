@@ -17,7 +17,7 @@
 import os
 import subprocess
 from wb_animation_action.config import COMPETITION_TIMEOUT
-from wb_animation_action.utils.webots import load_config
+from wb_animation_action.utils.webots import load_config, compile_controllers
 from wb_animation_action.animation import generate_animation_for_world
 from wb_animation_action.utils.git import push_directory_to_branch
 
@@ -33,5 +33,6 @@ def generate_competitor_preview(config):
 
     # Generate animation
     competition_config = load_config('webots.yaml')
+    compile_controllers()
     generate_animation_for_world(competition_config['world'], COMPETITION_TIMEOUT)
     push_directory_to_branch('/tmp/competition', clean=True)

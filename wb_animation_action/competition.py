@@ -38,7 +38,7 @@ class Competitor:
             self.controller_name = controller_name
 
     def __get_id(self):
-        return re.findall(r'([^@:\/\.]*?)\/([^@:\/\.]*)', self.git)[0]
+        return re.findall(r'\:(.*?)\/(.*).git', self.git)[0]
 
     def __get_controller_name(self):
         chars = string.ascii_uppercase + string.digits + string.ascii_lowercase
@@ -66,7 +66,7 @@ def _get_competitors():
         for rank, competitor_url in enumerate(f.readlines()):
             competitors.append(
                 Competitor(
-                    git=competitor_url,
+                    git=competitor_url.strip(),
                     rank=rank+1
                 )
             )

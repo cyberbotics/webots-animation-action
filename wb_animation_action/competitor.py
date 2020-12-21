@@ -16,17 +16,22 @@
 
 import os
 import subprocess
+from wb_animation_action.config import COMPETITION_TIMEOUT
+from wb_animation_action.utils.webots import load_config
+from wb_animation_action.animation import generate_animation_for_world
+from wb_animation_action.utils.git import push_directory_to_branch
 
 
 def generate_competitor_preview(config):
     competition_url = config['competition']
-    username = os.environ['GITHUB_ACTOR']
-    competitor_url = os.environ['GITHUB_REPOSITORY']
-    
+
     # Create a desired directory structure
     subprocess.check_output(f'git clone {competition_url} /tmp/competition', shell=True)
     os.makedirs('/tmp/competition/controllers/participant_controller', exist_ok=True)
     subprocess.check_output('mv $(ls -A) /tmp/competition/controllers/participant_controller', shell=True)
     subprocess.check_output('mv $(ls -dA /tmp/competition/*) .', shell=True)
 
-    subprocess.check_output(f'gh issue --repo {competition_url} create --title "User {username} wants to compete" --body "ControllerUrl: {competitor_url}"\nUser: {username}', shell=True)
+    # Generate animation
+    competition_config = load_config(config['/tmp/competition/webots.yaml'])
+    generate_animation_for_world(competition_config['world'], COMPETITION_TIMEOUT)
+    push_directory_to_branch('/tmp/competition', clean=True)

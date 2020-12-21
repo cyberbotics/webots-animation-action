@@ -18,22 +18,10 @@ import sys
 import os
 import subprocess
 import yaml
+from wb_animation_action.utils.webots import load_config
 from wb_animation_action.animation import generate_animation
 from wb_animation_action.competition import generate_competition
 from wb_animation_action.competitor import generate_competitor_preview
-
-
-def load_config():
-    """Load config from webots.yaml located in the repository root."""
-
-    config = None
-    if os.path.isfile('webots.yaml'):
-        with open('webots.yaml', 'r') as f:
-            config = yaml.load(f.read(), Loader=yaml.FullLoader) or {}
-    if config is None:
-        print('Cannot load `webots.yaml`')
-        sys.exit(1)
-    return config
 
 
 def main():

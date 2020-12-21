@@ -69,3 +69,7 @@ def push_directory_to_branch(source_directory, destination_directory='.', destin
 
     subprocess.check_output(f'cp -r {source_directory}/* {destination_directory}', shell=True)
     push()
+
+
+def get_current_branch_name():
+    return os.environ['GITHUB_REF'].split('/')[-1]

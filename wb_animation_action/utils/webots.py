@@ -17,7 +17,9 @@
 
 import subprocess
 import os
+import sys
 import re
+import yaml
 from glob import glob
 
 
@@ -81,3 +83,16 @@ def compile_controllers():
         if os.path.isdir(path):
             if os.path.isfile(os.path.join(path, 'Makefile')):
                 subprocess.check_output(f'cd {path} && make', shell=True)
+
+
+def load_config(file='webots.yaml'):
+    """Load config from webots.yaml located in the repository root."""
+
+    config = None
+    if os.path.isfile(file):
+        with open(file, 'r') as f:
+            config = yaml.load(f.read(), Loader=yaml.FullLoader) or {}
+    if config is None:
+        print('Cannot load `webots.yaml`')
+        sys.exit(1)
+    return config

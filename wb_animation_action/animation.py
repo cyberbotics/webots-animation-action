@@ -18,6 +18,7 @@ import os
 from glob import glob
 import subprocess
 import wb_animation_action.utils.git
+from wb_animation_action.utils.git import get_current_branch_name
 from wb_animation_action.utils.webots import get_world_info, expand_world_list, compile_controllers
 
 
@@ -108,7 +109,7 @@ def generate_animation(animation_config):
     _generate_animation_page(animation_config['worlds'])
 
     # Push animation to gh-pages
-    current_branch_name = os.environ['GITHUB_REF'].split('/')[-1]
+    current_branch_name = get_current_branch_name()
     wb_animation_action.utils.git.push_directory_to_branch(
         '/tmp/animation',
         destination_directory=current_branch_name,

@@ -37,14 +37,20 @@ class Competitor:
         else:
             self.controller_name = controller_name
 
+    def __get_id(self):
+        return re.findall(r'([^@:\/\.]*?)\/([^@:\/\.]*)', self.git)[0]
+
     def __get_controller_name(self):
         chars = string.ascii_uppercase + string.digits + string.ascii_lowercase
         hash_string = ''.join(random.choice(chars) for _ in range(5))
-        username, repository = re.findall(r'([^@:\/\.]*?)\/([^@:\/\.]*)', self.git)[0]
+        username, repository = self.__get_id()
         return f'wb_{username}_{repository}_{hash_string}'
 
     def get_dict(self):
         return {'git': self.git, 'rank': self.rank}
+
+    def __str__(self):
+        return self.__get_id()
 
 
 def _get_competitors():
@@ -93,6 +99,7 @@ def _clone_controllers(competitors):
 def generate_competition(competition_config):
     world_file = competition_config['world']
     competitors = _get_competitors()
+    matches = []
 
     # Prepare controllers
     _clone_controllers(competitors)
@@ -108,10 +115,11 @@ def generate_competition(competition_config):
         _set_controller_name_to_world(world_file, 'R1', competitor_b.controller_name)
 
         # Run match
+        match_directory = f'{competitor_a.controller_name}_vs_{competitor_b.controller_name}'
         destination_directory = os.path.join(
             '/tmp',
             'animation',
-            f'{competitor_a.controller_name}_vs_{competitor_b.controller_name}'
+            match_directory
         )
         generate_animation_for_world(world_file, MATCH_TIMEOUT, destination_directory=destination_directory)
 
@@ -123,6 +131,14 @@ def generate_competition(competition_config):
             competitor_a.rank -= 1
             competitor_b.rank += 1
             competitors = sorted(competitors, lambda c: c.rank)
+        
+        # Store the results
+        matches.append({
+            'directory': match_directory,
+            'competitor_a': str(competitor_a),
+            'competitor_b': str(competitor_b),
+            'winner': 'competitor_b' if winner == 1 else 'competitor_a'
+        })
 
         # Prepare next iteration
         lower_competitor_index -= 1
@@ -132,6 +148,10 @@ def generate_competition(competition_config):
 
     # Write results
     os.makedirs('/tmp/results', exist_ok=True)
+    results = {
+        'ranking': [c.get_dict() for c in competitors],
+        'matches': matches
+    }
     with open(os.path.join('/tmp/results', 'results.json'), 'w') as f:
-        f.write(json.dumps([c.get_dict() for c in competitors]))
+        f.write(json.dumps(results))
     wb_animation_action.utils.git.push_directory_to_branch('/tmp/results')

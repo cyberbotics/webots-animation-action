@@ -32,6 +32,6 @@ def generate_competitor_preview(config):
     subprocess.check_output('mv $(ls -dA /tmp/competition/*) .', shell=True)
 
     # Generate animation
-    competition_config = load_config('/tmp/competition/webots.yaml')
+    competition_config = load_config('controllers/participant_controller/webots.yaml')
     generate_animation_for_world(competition_config['world'], COMPETITION_TIMEOUT)
     push_directory_to_branch('/tmp/competition', clean=True)

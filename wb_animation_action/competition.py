@@ -29,10 +29,13 @@ MATCH_TIMEOUT = 15 * 60
 
 
 class Competitor:
-    def __init__(self, git, rank):
+    def __init__(self, git, rank, controller_name=None):
         self.git = git
         self.rank = rank
-        self.controller_name = self.__get_controller_name()
+        if controller_name is None: 
+            self.controller_name = self.__get_controller_name()
+        else:
+            self.controller_name = controller_name
 
     def __get_controller_name(self):
         chars = string.ascii_uppercase + string.digits + string.ascii_lowercase
@@ -45,12 +48,23 @@ class Competitor:
 
 
 def _get_competitors():
-    # TODO: This should be retrived from forks
-    return [
-        Competitor(git='https://github.com/lukicdarkoo/webots-competition-participant-template', rank=1),
-        Competitor(git='https://github.com/lukicdarkoo/webots-competition-participant-template', rank=2),
-        Competitor(git='https://github.com/lukicdarkoo/webots-competition-participant-template', rank=3),
-    ]
+    competitors = []
+    competitors.append(
+        Competitor(
+            git=None,
+            rank=0,
+            controller_name='dummy'
+        )
+    )
+    with open('competitors.txt', 'r') as f:
+        for rank, competitor_url in enumerate(f.readlines()):
+            competitors.append(
+                Competitor(
+                    git=competitor_url,
+                    rank=rank+1
+                )
+            )
+    return competitors
 
 
 def _set_controller_name_to_world(world_file, robot_name, controller_name):
@@ -64,18 +78,21 @@ def _set_controller_name_to_world(world_file, robot_name, controller_name):
 
 
 def _clone_controllers(competitors):
+    # Clone controller content
+    print(os.environ['DEPLOY_KEY'])
+    print(os.environ['GIT_SSH_COMMAND'])
+    print(subprocess.check_output('cat /tmp/deploy_key', shell=True))
+
     for competitor in competitors:
-        controller_path = os.path.join('controllers', competitor.controller_name)
+        if competitor.git is not None:
+            competitor.git = 'git@github.com:lukicdarkoo/webots-competition-participant-template.git'
+            controller_path = os.path.join('controllers', competitor.controller_name)
+            subprocess.check_output(f"git clone {competitor.git} {controller_path}", shell=True)
 
-        # Clone controller content
-        with open('/tmp/deploy_key', 'w') as f:
-            f.write(os.environ['DEPLOY_KEY'])
-        subprocess.check_output(f"GIT_SSH_COMMAND='ssh -i /tmp/deploy_key -o IdentitiesOnly=yes' git clone {competitor.git} {controller_path}", shell=True)
-
-        # Update controller's internal name
-        python_filename = os.path.join(controller_path, 'participant_controller.py')
-        if os.path.exists(python_filename):
-            os.rename(python_filename, os.path.join(controller_path, f'{competitor.controller_name}.py'))
+            # Update controller's internal name
+            python_filename = os.path.join(controller_path, 'participant_controller.py')
+            if os.path.exists(python_filename):
+                os.rename(python_filename, os.path.join(controller_path, f'{competitor.controller_name}.py'))
 
 
 def generate_competition(competition_config):

@@ -90,7 +90,7 @@ def _clone_controllers(competitors):
             controller_path = os.path.join('controllers', competitor.controller_name)
             subprocess.check_output(f"git clone {competitor.git} {controller_path}", shell=True)
 
-            # Update controller's internal name
+            # Update controller's internal name (Python)
             python_filename = os.path.join(controller_path, 'participant_controller.py')
             if os.path.exists(python_filename):
                 os.rename(python_filename, os.path.join(controller_path, f'{competitor.controller_name}.py'))

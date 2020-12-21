@@ -76,11 +76,24 @@ type: competition
 world: worlds/ratslife_round.wbt
 ```
 
+| **name**                      | **description**                                             |
+|-------------------------------|-------------------------------------------------------------|
+| `init`                        | Init hook used for configuruing and installing dependcies   |
+| `type`                        | Project type, can be `demo`, `competition` and `competitor` |
+| `world`                       | A world to run the competition in                           |
+
 Limitations:
 - The opposing robots have to have `DEF` field set to `R1` and `R2`.
 
 #### Competitor
+
 ```yaml
 type: competitor
 competition: https://github.com/username/competition
 ```
+
+| **name**                      | **description**                                             |
+|-------------------------------|-------------------------------------------------------------|
+| `init`                        | Init hook used for configuruing and installing dependcies   |
+| `type`                        | Project type, can be `demo`, `competition` and `competitor` |
+| `competition`                 | GitHub URL to the competition                               |

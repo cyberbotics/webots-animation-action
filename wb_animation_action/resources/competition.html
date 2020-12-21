@@ -56,7 +56,23 @@
         async function init() {
             //showWorldFromHash();
             const results = await loadResults();
-            console.log('asd', results);
+            
+            const rankingsNode = document.getElementById('rankings');
+            for (const rank of results.ranking) {
+                rankingsNode.innerHTML += `<tr>
+                    <td>${rank.id}</td>
+                    <td>${rank.rank}</td>
+                </tr>`;
+            }
+
+            const matchesNode = document.getElementById('matches');
+            for (const match of results.matches) {
+                matchesNode.innerHTML += `<tr>
+                    <td>${match.competitor_a}</td>
+                    <td>${(match.winner == 'competitor_a') ? '1 - 0' : '0 - 1'}</td>
+                    <td>${match.competitor_b}</td>
+                </tr>`;
+            }
         }
 
         function hashChanged() {
@@ -75,10 +91,16 @@
 </head>
 
 <body>
-    <div id="view3d"></div>
-    <div id="sidebar">
-        <h2>List of simulations</h2>
+    <div id="results">
+        <h2>Rankings</h2>
+        <table id="rankings"></table>
+
+        <h2>Matches</h2>
+        <table id="matches"></table>
     </div>
+
+    <div id="view3d"></div>
+    
 </body>
 
 </html>

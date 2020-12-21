@@ -20,6 +20,7 @@ import json
 import random
 import string
 import subprocess
+from shutil import copyfile
 import wb_animation_action.utils
 from wb_animation_action.config import COMPETITION_TIMEOUT
 from wb_animation_action.animation import generate_animation_for_world
@@ -154,4 +155,5 @@ def generate_competition(competition_config):
     }
     with open(os.path.join('/tmp/results', 'results.json'), 'w') as f:
         f.write(json.dumps(results))
+    copyfile(src, '/tmp/results/index.html')
     wb_animation_action.utils.git.push_directory_to_branch('/tmp/results')

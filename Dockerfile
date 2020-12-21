@@ -1,4 +1,4 @@
-FROM cyberbotics/webots:latest
+FROM cyberbotics/webots:R2020b-rev1-ubuntu20.04
 
 RUN apt-get update && \ 	
     apt-get install -y \

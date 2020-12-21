@@ -21,11 +21,9 @@ import random
 import string
 import subprocess
 import wb_animation_action.utils
+from wb_animation_action.config import COMPETITION_TIMEOUT
 from wb_animation_action.animation import generate_animation_for_world
 from wb_animation_action.utils.webots import compile_controllers
-
-
-MATCH_TIMEOUT = 15 * 60
 
 
 class Competitor:
@@ -38,13 +36,15 @@ class Competitor:
             self.controller_name = controller_name
 
     def __get_id(self):
-        return re.findall(r'\:(.*?)\/(.*).git', self.git)[0]
+        if self.git:
+            username, repository = re.findall(r'\:(.*?)\/(.*).git', self.git)[0]
+            return f'{username}_{repository}'
+        return 'dummy'
 
     def __get_controller_name(self):
         chars = string.ascii_uppercase + string.digits + string.ascii_lowercase
         hash_string = ''.join(random.choice(chars) for _ in range(5))
-        username, repository = self.__get_id()
-        return f'wb_{username}_{repository}_{hash_string}'
+        return f'wb_{self.__get_id()}_{hash_string}'
 
     def get_dict(self):
         return {'git': self.git, 'rank': self.rank}
@@ -121,7 +121,7 @@ def generate_competition(competition_config):
             'animation',
             match_directory
         )
-        generate_animation_for_world(world_file, MATCH_TIMEOUT, destination_directory=destination_directory)
+        generate_animation_for_world(world_file, COMPETITION_TIMEOUT, destination_directory=destination_directory)
 
         # Update ranks
         winner = None

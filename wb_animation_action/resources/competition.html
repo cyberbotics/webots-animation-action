@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Webots Simulation Preview</title>
+    <link type="text/css" href="https://www.cyberbotics.com/jquery-ui/1.11.4/jquery-ui.min.css" rel="stylesheet" />
+    <link type="text/css" href="https://www.cyberbotics.com/wwi/R2020b/wwi.css" rel="stylesheet" />
+    <style>
+    </style>
+    <script>
+        function showWorld(worldName) {
+            if (view) {
+                view.resetSimulation();
+                view.destroyWorld();
+                view.close();
+                view = null;
+                document.getElementById("view3d").innerHTML = null;
+            }
+            if (!view) {
+                view = new webots.View(document.getElementById("view3d"));
+            }
+
+            view.open(worldName + ".x3d");
+            view.setAnimation(worldName + ".json", "play", true);
+        }
+
+        function onWorldClicked(e, worldName) {
+            e.preventDefault();
+            window.location.replace('#' + worldName);
+        }
+
+        function getWorldFromHash() {
+            if (window.location.hash) {
+                const worldName = window.location.hash.substring(1);
+                const matchingWorld = WORLD_LIST.find(element => element.name == worldName);
+                if (matchingWorld) {
+                    return matchingWorld;
+                }
+                return null;
+            }
+            return null;
+        }
+
+        function showWorldFromHash() {
+            currentWorld = getWorldFromHash();
+            if (!currentWorld) {
+                window.location.replace('#' + WORLD_LIST[0].name);
+                return;
+            }
+            console.log(currentWorld);
+            showWorld(currentWorld.name);
+        }
+
+        async function init() {
+            //showWorldFromHash();
+            const results = await loadResults();
+            console.log('asd', results);
+        }
+
+        function hashChanged() {
+            showWorldFromHash();
+        }
+
+        function loadResults() {
+            return fetch('results.json', {
+                method: 'get'
+            }).then(response => response.json())
+        }
+
+        window.addEventListener('load', init, false);
+        window.addEventListener('hashchange', hashChanged);
+    </script>
+</head>
+
+<body>
+    <div id="view3d"></div>
+    <div id="sidebar">
+        <h2>List of simulations</h2>
+    </div>
+</body>
+
+</html>

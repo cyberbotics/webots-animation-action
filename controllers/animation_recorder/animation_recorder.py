@@ -26,12 +26,20 @@ def main():
 
     robot = Supervisor()
     timestep = int(robot.getBasicTimeStep())
+    receiver = robot.getReceiver('receiver')
+    receiver.enable(timestep)
+
     robot.animationStartRecording(args.output)
 
     step_i = 0
+    done = False
     n_steps = (1000 * args.duration) / robot.getBasicTimeStep()
-    while robot.step(timestep) != -1 and step_i < n_steps:
+    while not done and robot.step(timestep) != -1 and step_i < n_steps:
         step_i += 1
+        if receiver.getQueueLength() > 0:
+            if str(receiver.getData()) == 'done':
+                done = True
+            receiver.nextPacket()
 
     robot.animationStopRecording()
     print('The animation is saved')

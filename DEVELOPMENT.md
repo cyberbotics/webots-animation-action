@@ -26,13 +26,13 @@ docker run \
 
 Pull a sample project:
 ```bash
-git clone https://github.com/lukicdarkoo/webots-competition-template.git $HOME/webots-competition-template
+git clone https://github.com/lukicdarkoo/webots-competition-organizer.git $HOME/webots-competition-organizer
 ```
 
 Run:
 ```bash
 docker run \
-    -v $HOME/webots-competition-template:/root/repo \
+    -v $HOME/webots-competition-organizer:/root/repo \
     -w /root/repo \
     -e DEBUG=true \
     -it webots-animation-action
@@ -42,13 +42,13 @@ docker run \
 
 Pull a sample project:
 ```bash
-git clone https://github.com/lukicdarkoo/webots-competition-participant-template.git $HOME/webots-competition-participant-template
+git clone https://github.com/lukicdarkoo/webots-competition-competitor.git $HOME/webots-competition-competitor
 ```
 
 Run:
 ```bash
 docker run \
-    -v $HOME/webots-competition-participant-template:/root/repo \
+    -v $HOME/webots-competition-competitor:/root/repo \
     -w /root/repo \
     -e DEBUG=true \
     -it webots-animation-action

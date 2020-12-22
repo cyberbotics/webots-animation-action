@@ -22,7 +22,7 @@ import string
 import subprocess
 from shutil import copyfile
 import wb_animation_action.utils
-from wb_animation_action.config import COMPETITION_TIMEOUT
+from wb_animation_action.config import COMPETITION_TIMEOUT, RESOURCES_DIRECTORY
 from wb_animation_action.animation import generate_animation_for_world
 from wb_animation_action.utils.webots import compile_controllers
 
@@ -31,7 +31,7 @@ class Competitor:
     def __init__(self, git, rank, controller_name=None):
         self.git = git
         self.rank = rank
-        if controller_name is None: 
+        if controller_name is None:
             self.controller_name = self.__get_controller_name()
         else:
             self.controller_name = controller_name
@@ -132,7 +132,7 @@ def generate_competition(competition_config):
             competitor_a.rank -= 1
             competitor_b.rank += 1
             competitors = sorted(competitors, lambda c: c.rank)
-        
+
         # Store the results
         matches.append({
             'directory': match_directory,
@@ -155,5 +155,5 @@ def generate_competition(competition_config):
     }
     with open(os.path.join('/tmp/results', 'results.json'), 'w') as f:
         f.write(json.dumps(results))
-    copyfile(src, '/tmp/results/index.html')
+    copyfile(os.path.join(RESOURCES_DIRECTORY, 'competition.html'), '/tmp/results/index.html')
     wb_animation_action.utils.git.push_directory_to_branch('/tmp/results')

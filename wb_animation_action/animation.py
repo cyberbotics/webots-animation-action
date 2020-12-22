@@ -17,6 +17,7 @@
 import os
 from glob import glob
 import subprocess
+from wb_animation_action.config import RESOURCES_DIRECTORY
 import wb_animation_action.utils.git
 from wb_animation_action.utils.git import get_current_branch_name
 from wb_animation_action.utils.webots import get_world_info, expand_world_list, compile_controllers
@@ -28,8 +29,13 @@ def _generate_animation_recorder_vrml(duration, output):
         f'  name "supervisor"\n'
         f'  controller "animation_recorder"\n'
         f'  controllerArgs [\n'
-        f'      "--duration={duration}"\n'
-        f'      "--output={output}"\n'
+        f'    "--duration={duration}"\n'
+        f'    "--output={output}"\n'
+        f'  ]\n'
+        f'  children [\n'
+        f'    Receiver {{\n'
+        f'      channel 1024\n'
+        f'    }}\n'
         f'  ]\n'
         f'  supervisor TRUE\n'
         f'}}\n'
@@ -43,8 +49,7 @@ def _generate_animation_page(worlds_config):
     worlds = [get_world_info(world_config['file']) for world_config in worlds_config]
 
     # Write to the template
-    template_dir = os.path.dirname(os.path.realpath(__file__))
-    with open(os.path.join(template_dir, 'resources', 'animation-page.template.html'), 'r') as f:
+    with open(os.path.join(RESOURCES_DIRECTORY, 'animation-page.template.html'), 'r') as f:
         template = f.read()
     template = template.replace('{ WORLD_LIST_PLACEHOLDER }', str(worlds))
     with open(os.path.join('/tmp/animation', 'index.html'), 'w') as f:
@@ -52,8 +57,7 @@ def _generate_animation_page(worlds_config):
 
 
 def _generate_branch_index():
-    template_dir = os.path.dirname(os.path.realpath(__file__))
-    with open(os.path.join(template_dir, 'resources', 'animation-list.template.html'), 'r') as f:
+    with open(os.path.join(RESOURCES_DIRECTORY, 'animation-list.template.html'), 'r') as f:
         template = f.read()
     worlds = [f'<li><a href="{path}">{path}</a></li>' for path in glob('*') if os.path.isdir(path)]
     template = template.replace('{ BRANCH_LIST_PLACEHOLDER }', '\n'.join(worlds))

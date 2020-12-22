@@ -103,7 +103,7 @@ def _clone_controllers(competitors):
         if competitor.git is not None:
             controller_path = os.path.join('controllers', competitor.controller_name)
             repo = None
-            if os.environ['___BOT_USERNAME']:
+            if '___BOT_USERNAME' not in os.environ:
                 repo = 'https://{}:{}@github.com/{}/{}'.format(
                     os.environ['BOT_USERNAME'],
                     os.environ['BOT_PAT_KEY'],

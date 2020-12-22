@@ -25,21 +25,26 @@
             view.setAnimation(worldName + ".json", "play", true);
         }
 
+        function getCompetitorNode(competitor) {
+            if (competitor.username) {
+                return `<a target="_blank" href="https://github.com/${competitor.username}">${competitor.username}</a>/${competitor.repository_name}`;
+            }
+            return competitor.id;
+        }
+
+        function getCompetitorNodeFromId(competitors, id) {
+            const competitor = competitors.find(element => element.id == id);
+            return getCompetitorNode(competitor);
+        }
+
         async function init() {
             const results = await loadResults();
 
             const rankingsNode = document.getElementById('rankings');
-            for (const rank of results.ranking) {
-                let competitor;
-                if (rank.username) {
-                    competitor = `<a target="_blank" href="https://github.com/${rank.username}">${rank.username}</a>/${rank.repository_name}`;
-                } else {
-                    competitor = `${rank.id}`;
-                }
-
+            for (const competitor of results.ranking) {
                 rankingsNode.innerHTML += `<tr>
-                    <td>${rank.rank}</td>
-                    <td>${competitor}</td>
+                    <td>${competitor.rank}</td>
+                    <td>${getCompetitorNode(competitor)}</td>
                 </tr>`;
             }
 
@@ -52,9 +57,9 @@
                 const resultNode = document.createElement('div');
                 resultNode.setAttribute('class', 'result');
                 resultNode.innerHTML = `
-                    <div class="cell competitor-a">${match.competitor_a}</div>
+                    <div class="cell competitor-a">${getCompetitorNodeFromId(results.ranking, match.competitor_a)}</div>
                     <div class="cell result">${(match.winner == 'competitor_a') ? '1 - 0' : '0 - 1'}</div>
-                    <div class="cell competitor-b">${match.competitor_b}</div>
+                    <div class="cell competitor-b">${getCompetitorNodeFromId(results.ranking, match.competitor_b)}</div>
                 `;
                 rawNode.appendChild(resultNode);
                 rawNode.appendChild(previewNode);

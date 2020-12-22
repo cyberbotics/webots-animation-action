@@ -30,7 +30,7 @@ def generate_competitor_preview(config):
     # Create a desired directory structure
     subprocess.check_output(f'git clone {competition_url} {base}', shell=True)
     os.makedirs(os.path.join(base, 'controllers/participant_controller'), exist_ok=True)
-    shutil.copytree('*', os.path.join(base, 'controllers/participant_controller'))
+    shutil.copytree('.', os.path.join(base, 'controllers/participant_controller'))
 
     # Generate animation
     competition_config = load_config('webots.yaml')

@@ -30,9 +30,16 @@
 
             const rankingsNode = document.getElementById('rankings');
             for (const rank of results.ranking) {
+                let competitor;
+                if (rank.username) {
+                    competitor = `<a target="_blank" href="https://github.com/${rank.username}">${rank.username}</a>/${rank.repository_name}`;
+                } else {
+                    competitor = `${rank.id}`;
+                }
+
                 rankingsNode.innerHTML += `<tr>
                     <td>${rank.rank}</td>
-                    <td>${rank.id}</td>
+                    <td>${competitor}</td>
                 </tr>`;
             }
 

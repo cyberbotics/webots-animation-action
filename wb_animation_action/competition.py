@@ -104,8 +104,8 @@ def _clone_controllers(competitors):
             controller_path = os.path.join('controllers', competitor.controller_name)
 
             subprocess.check_output("https://{}:{}@github.com/{}/{} {}".format(
-                os.environ['GITHUB_ACTOR'],
-                os.environ['GITHUB_TOKEN'],
+                os.environ['BOT_USERNAME'],
+                os.environ['BOT_PAT_KEY'],
                 competitor.username,
                 competitor.repository_name,
                 controller_path

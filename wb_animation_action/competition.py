@@ -102,14 +102,13 @@ def _clone_controllers(competitors):
     for competitor in competitors:
         if competitor.git is not None:
             controller_path = os.path.join('controllers', competitor.controller_name)
-
-            subprocess.check_output("https://{}:{}@github.com/{}/{} {}".format(
+            repo = 'https://{}:{}@github.com/{}/{}'.format(
                 os.environ['BOT_USERNAME'],
                 os.environ['BOT_PAT_KEY'],
                 competitor.username,
-                competitor.repository_name,
-                controller_path
-            ), shell=True)
+                competitor.repository_name
+            )
+            subprocess.check_output(f'git clone {repo} {controller_path}', shell=True)
 
             # Update controller's internal name (Python)
             python_filename = os.path.join(controller_path, 'participant_controller.py')

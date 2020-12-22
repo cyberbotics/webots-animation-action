@@ -15,6 +15,7 @@
 # limitations under the License.
 
 import os
+import shutil
 import subprocess
 from wb_animation_action.config import COMPETITION_TIMEOUT
 from wb_animation_action.utils.webots import load_config, compile_controllers
@@ -24,15 +25,15 @@ from wb_animation_action.utils.git import push_directory_to_branch
 
 def generate_competitor_preview(config):
     competition_url = config['competition']
+    base = '/tmp/competition/'
 
     # Create a desired directory structure
-    subprocess.check_output(f'git clone {competition_url} /tmp/competition', shell=True)
-    os.makedirs('/tmp/competition/controllers/participant_controller', exist_ok=True)
-    subprocess.check_output('mv $(ls -A) /tmp/competition/controllers/participant_controller', shell=True)
-    subprocess.check_output('mv $(ls -dA /tmp/competition/*) .', shell=True)
+    subprocess.check_output(f'git clone {competition_url} {base}', shell=True)
+    os.makedirs(os.path.join(base, 'controllers/participant_controller'), exist_ok=True)
+    shutil.copytree('*', os.path.join(base, 'controllers/participant_controller'))
 
     # Generate animation
     competition_config = load_config('webots.yaml')
-    compile_controllers()
-    generate_animation_for_world(competition_config['world'], COMPETITION_TIMEOUT)
-    push_directory_to_branch('/tmp/competition', clean=True)
+    compile_controllers(base=base)
+    generate_animation_for_world(os.path.join(base, competition_config['world']), COMPETITION_TIMEOUT)
+    push_directory_to_branch('/tmp/animation', clean=True)

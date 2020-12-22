@@ -78,8 +78,8 @@ def expand_world_list(world_list):
     return expanded_world_list
 
 
-def compile_controllers():
-    for path in glob('controllers/*'):
+def compile_controllers(base='.'):
+    for path in glob(os.path.join(base, 'controllers/*')):
         if os.path.isdir(path):
             if os.path.isfile(os.path.join(path, 'Makefile')):
                 subprocess.check_output(f'cd {path} && make', shell=True)

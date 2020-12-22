@@ -31,15 +31,23 @@ class Competitor:
     def __init__(self, git, rank, controller_name=None):
         self.git = git
         self.rank = rank
+        self.username = None
+        self.repository_name = None
+        self.controller_name = None
+
         if controller_name is None:
             self.controller_name = self.__get_controller_name()
         else:
             self.controller_name = controller_name
 
-    def __get_id(self):
         if self.git:
-            username, repository = re.findall(r'\:(.*?)\/(.*).git', self.git)[0]
-            return f'{username}_{repository}'
+            self.username, self.repository_name = re.findall(
+                r'github\.com\/([a-zA-Z0-9\-\_]*)\/([a-zA-Z0-9\-\_]*)', self.git
+            )[0]
+
+    def __get_id(self):
+        if self.username and self.repository_name:
+            return f'{self.username}_{self.repository_name}'
         return 'dummy'
 
     def __get_controller_name(self):
@@ -48,7 +56,12 @@ class Competitor:
         return f'wb_{self.__get_id()}_{hash_string}'
 
     def get_dict(self):
-        return {'id': self.__get_id(), 'rank': self.rank}
+        return {
+            'id': self.__get_id(),
+            'rank': self.rank,
+            'username': self.username,
+            'repository_name': self.repository_name
+        }
 
     def __str__(self):
         return self.__get_id()
@@ -90,13 +103,13 @@ def _clone_controllers(competitors):
         if competitor.git is not None:
             controller_path = os.path.join('controllers', competitor.controller_name)
 
-            subprocess.check_output("https://{}:{}@github.com/lukicdarkoo/webots-competition-competitor {}".format(
+            subprocess.check_output("https://{}:{}@github.com/{}/{} {}".format(
                 os.environ['GITHUB_ACTOR'],
                 os.environ['GITHUB_TOKEN'],
+                competitor.username,
+                competitor.repository_name,
                 controller_path
             ), shell=True)
-
-            #subprocess.check_output(f"git clone {competitor.git} {controller_path}", shell=True)
 
             # Update controller's internal name (Python)
             python_filename = os.path.join(controller_path, 'participant_controller.py')

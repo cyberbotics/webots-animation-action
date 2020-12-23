@@ -37,7 +37,7 @@ def main():
     while not done and robot.step(timestep) != -1 and step_i < n_steps:
         step_i += 1
         if receiver.getQueueLength() > 0:
-            if str(receiver.getData()) == 'done':
+            if receiver.getData().decode('utf-8') == 'done':
                 done = True
             receiver.nextPacket()
 

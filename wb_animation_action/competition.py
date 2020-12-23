@@ -34,16 +34,14 @@ class Competitor:
         self.username = None
         self.repository_name = None
         self.controller_name = None
-
-        if controller_name is None:
-            self.controller_name = self.__get_controller_name()
-        else:
-            self.controller_name = controller_name
-
         if self.git:
             self.username, self.repository_name = re.findall(
                 r'github\.com\/([a-zA-Z0-9\-\_]*)\/([a-zA-Z0-9\-\_]*)', self.git
             )[0]
+        if controller_name is None:
+            self.controller_name = self.__get_controller_name()
+        else:
+            self.controller_name = controller_name
 
     def __get_id(self):
         if self.username and self.repository_name:

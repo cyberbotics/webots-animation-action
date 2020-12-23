@@ -102,8 +102,26 @@
         html,
         body {
             background-color: #bdc3c7;
+            color: #2c3e50;
             padding: 0;
             font-family: 'Raleway', sans-serif;
+        }
+
+        a {
+            color: #2980b9;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        h2 {
+            text-align: center;
+        }
+
+        th {
+            text-align: left;
         }
 
         #content {
@@ -114,6 +132,7 @@
             display: flex;
             align-items: stretch;
             flex-direction: column;
+            border-radius: 3px;
         }
 
         #matches {
@@ -125,6 +144,10 @@
         #matches .result {
             display: flex;
             flex-direction: row;
+        }
+
+        #matches .item {
+            border-radius: 3px;
         }
 
         #matches .item:hover {
@@ -154,12 +177,15 @@
 <body>
     <div id="content">
         <h2>Rankings</h2>
-        <table id="rankings"></table>
+        <table id="rankings">
+            <tr>
+                <th>#</th>
+                <th>controller</th>
+            </tr>
+        </table>
 
         <h2>Matches</h2>
-        <div id="matches">
-            
-        </div>
+        <div id="matches"></div>
     </div>
 </body>
 

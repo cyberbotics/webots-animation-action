@@ -20,8 +20,10 @@ import json
 import random
 import string
 import subprocess
+from glob import glob
 from shutil import copyfile
 import wb_animation_action.utils
+from distutils.dir_util import copy_tree
 from wb_animation_action.config import COMPETITION_TIMEOUT, RESOURCES_DIRECTORY
 from wb_animation_action.animation import generate_animation_for_world
 from wb_animation_action.utils.webots import compile_controllers
@@ -119,6 +121,9 @@ def generate_competition(competition_config):
     competitors = _get_competitors()
     matches = []
 
+    # Prepare directories
+    os.makedirs('/tmp/output', exist_ok=True)
+
     # Prepare controllers
     _clone_controllers(competitors)
     compile_controllers()
@@ -141,18 +146,26 @@ def generate_competition(competition_config):
         )
         generate_animation_for_world(world_file, COMPETITION_TIMEOUT, destination_directory=destination_directory)
 
+        json_file = glob(os.path.join(destination_directory, '*.json')).pop()
+        os.rename(json_file, os.path.join(destination_directory, match_directory + '.json'))
+        x3d_file = glob(os.path.join(destination_directory, '*.x3d')).pop()
+        os.rename(x3d_file, os.path.join(destination_directory, 'model.x3d'))
+        html_file = glob(os.path.join(destination_directory, '*.html')).pop()
+        os.remove(html_file)
+        copy_tree(destination_directory, '/tmp/output')
+
         # Update ranks
-        winner = None
+        winner=None
         with open('/tmp/winner.txt', 'r') as f:
-            winner = f.read()
+            winner=f.read()
         if winner == 1:
             competitor_a.rank -= 1
             competitor_b.rank += 1
-            competitors = sorted(competitors, lambda c: c.rank)
+            competitors=sorted(competitors, lambda c: c.rank)
 
         # Store the results
         matches.append({
-            'directory': match_directory,
+            'id': match_directory,
             'competitor_a': str(competitor_a),
             'competitor_b': str(competitor_b),
             'winner': 'competitor_b' if winner == 1 else 'competitor_a'
@@ -162,11 +175,11 @@ def generate_competition(competition_config):
         lower_competitor_index -= 1
 
     # Write animation
-    wb_animation_action.utils.git.push_directory_to_branch('/tmp/animation', clean=True)
+    wb_animation_action.utils.git.push_directory_to_branch('/tmp/output', clean=True)
 
     # Write results
     os.makedirs('/tmp/results', exist_ok=True)
-    results = {
+    results={
         'ranking': [c.get_dict() for c in competitors],
         'matches': matches
     }

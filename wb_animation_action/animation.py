@@ -34,7 +34,6 @@ def _generate_animation_recorder_vrml(duration, output):
         f'  ]\n'
         f'  children [\n'
         f'    Receiver {{\n'
-        f'      name "receiver"'
         f'      channel 1024\n'
         f'    }}\n'
         f'  ]\n'

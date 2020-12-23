@@ -29,6 +29,7 @@ def main():
     receiver = robot.getReceiver('receiver')
     receiver.enable(timestep)
 
+    robot.step(timestep)
     robot.animationStartRecording(args.output)
 
     step_i = 0

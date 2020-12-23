@@ -3,7 +3,7 @@
 
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' />
     <title>Competition</title>
     <link type="text/css" href="https://www.cyberbotics.com/jquery-ui/1.11.4/jquery-ui.min.css" rel="stylesheet" />
     <link type="text/css" href="https://www.cyberbotics.com/wwi/R2020b/wwi.css" rel="stylesheet" />
@@ -14,15 +14,16 @@
     <script src="https://www.cyberbotics.com/wwi/R2020b/webots.min.js"></script>
     <script>
         let view = null;
+        let activePreviewNode = null;
 
-        function showWorld(node, worldName) {
+        function showWorld(node, x3dFile, jsonFile) {
             if (!view) {
                 view = new webots.View(node);
             }
 
             previousWorldNode = node;
-            view.open(worldName + ".x3d");
-            view.setAnimation(worldName + ".json", "play", true);
+            view.open(x3dFile);
+            view.setAnimation(jsonFile, 'play', true);
         }
 
         function getCompetitorNode(competitor) {
@@ -35,6 +36,20 @@
         function getCompetitorNodeFromId(competitors, id) {
             const competitor = competitors.find(element => element.id == id);
             return getCompetitorNode(competitor);
+        }
+
+        function hideActivePreview() {
+            if (activePreviewNode) {
+                activePreviewNode.style.height = '0';
+                activePreviewNode.innerHTML = null;
+                activePreviewNode = null;
+            }
+            if (view) {
+                view.resetSimulation();
+                view.destroyWorld();
+                view.close();
+                view = null;
+            }
         }
 
         async function init() {
@@ -50,6 +65,9 @@
 
             const matchesNode = document.getElementById('matches');
             for (const match of results.matches) {
+                const state = {
+                    visible: false
+                };
                 const rawNode = document.createElement('div');
                 rawNode.setAttribute('class', 'item');
 
@@ -64,23 +82,14 @@
                 rawNode.appendChild(resultNode);
                 rawNode.appendChild(previewNode);
                 resultNode.addEventListener('click', (event) => {
-                    if (!this.state) {
-                        this.state = 'hidden';
-                    }
-                    if (this.state == 'hidden') {
-                        this.state = 'shown';
+                    hideActivePreview();
+                    if (state.visible == false || activePreviewNode != previewNode) {
                         previewNode.style.height = '500px';
-                        showWorld(previewNode, `${match.directory}/ratslife_round`);
+                        showWorld(previewNode, 'model.x3d', match.id + '.json');
+                        activePreviewNode = previewNode;
+                        state.visible = true;
                     } else {
-                        this.state = 'hidden';
-                        previewNode.style.height = '0';
-                        if (view) {
-                            view.resetSimulation();
-                            view.destroyWorld();
-                            view.close();
-                            view = null;
-                            previewNode.innerHTML = null;
-                        }
+                        state.visible = false;
                     }
                 });
 
@@ -104,6 +113,7 @@
             background-color: #bdc3c7;
             color: #2c3e50;
             padding: 0;
+            margin: 0;
             font-family: 'Raleway', sans-serif;
         }
 
@@ -122,6 +132,15 @@
 
         th {
             text-align: left;
+        }
+
+        .card {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card .matches {
+            flex: 2;
         }
 
         #content {
@@ -168,6 +187,10 @@
             text-align: right;
         }
 
+        #matches .competitor-b {
+            text-align: left;
+        }
+
         #matches .result {
             text-align: center;
         }
@@ -176,16 +199,20 @@
 
 <body>
     <div id="content">
-        <h2>Rankings</h2>
-        <table id="rankings">
-            <tr>
-                <th>#</th>
-                <th>controller</th>
-            </tr>
-        </table>
+        <div class="card rankings">
+            <h2>Rankings</h2>
+            <table id="rankings">
+                <tr>
+                    <th>#</th>
+                    <th>controller</th>
+                </tr>
+            </table>
+        </div>
 
-        <h2>Matches</h2>
-        <div id="matches"></div>
+        <div class="card matches">
+            <h2>Matches</h2>
+            <div id="matches"></div>
+        </div>
     </div>
 </body>
 

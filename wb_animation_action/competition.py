@@ -176,8 +176,7 @@ def generate_competition(competition_config):
                     points = [float(x) for x in value.split(',')]
 
         if winner == 1:
-            competitor_a.rank -= 1
-            competitor_b.rank += 1
+            competitor_a.rank, competitor_b.rank = competitor_b.rank, competitor_a.rank
             competitors = sorted(competitors, key=lambda c: c.rank)
 
         # Store the results

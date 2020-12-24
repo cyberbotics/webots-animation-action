@@ -17,6 +17,7 @@
 import re
 import os
 import json
+import time
 import random
 import string
 import subprocess
@@ -156,7 +157,7 @@ def generate_competition(competition_config):
         json_file = glob(os.path.join(destination_directory, '*.json')).pop()
         os.rename(json_file, os.path.join(destination_directory, match_directory + '.json'))
         x3d_file = glob(os.path.join(destination_directory, '*.x3d')).pop()
-        os.rename(x3d_file, os.path.join(destination_directory, 'model.x3d'))
+        os.rename(x3d_file, os.path.join(destination_directory, match_directory + '.x3d'))
         html_file = glob(os.path.join(destination_directory, '*.html')).pop()
         os.remove(html_file)
         copy_tree(destination_directory, '/tmp/output')
@@ -198,7 +199,8 @@ def generate_competition(competition_config):
     os.makedirs('/tmp/results', exist_ok=True)
     results = {
         'ranking': [c.get_dict() for c in competitors],
-        'matches': matches
+        'matches': matches,
+        'timestamp': time.time()
     }
     with open(os.path.join('/tmp/results', 'results.json'), 'w') as f:
         f.write(json.dumps(results))

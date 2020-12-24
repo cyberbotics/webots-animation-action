@@ -55,6 +55,12 @@
         async function init() {
             const results = await loadResults();
 
+            // Time
+            const d = new Date(0);
+            d.setUTCSeconds(results.timestamp);
+            document.getElementById('timestamp').innerHTML = d;
+
+            // Rankings
             const rankingsNode = document.getElementById('rankings');
             for (const competitor of results.ranking) {
                 rankingsNode.innerHTML += `<tr>
@@ -63,6 +69,7 @@
                 </tr>`;
             }
 
+            // Matches
             const matchesNode = document.getElementById('matches');
             for (const match of results.matches) {
                 const state = {
@@ -85,7 +92,7 @@
                     hideActivePreview();
                     if (state.visible == false || activePreviewNode != previewNode) {
                         previewNode.style.height = '500px';
-                        showWorld(previewNode, 'model.x3d', match.id + '.json');
+                        showWorld(previewNode, match.id + '.x3d', match.id + '.json');
                         activePreviewNode = previewNode;
                         state.visible = true;
                     } else {
@@ -200,6 +207,7 @@
 <body>
     <div id="content">
         <h1>Rat's Life Leader Board</h1>
+        <p>Updated on <span id="timestamp"></span></p>
 
         <div class="card rankings">
             <h2>Rankings</h2>

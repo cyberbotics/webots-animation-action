@@ -85,14 +85,14 @@ def generate_animation_for_world(world_file, duration, destination_directory='/t
 
     # Runs simulation in Webots
     out = subprocess.Popen(
-        ['xvfb-run', 'webots', '--stdout', '--stderr', '--batch', '--mode=fast', world_file],
+        ['xvfb-run', 'webots', '--stdout', '--stderr', '--batch', '--mode=fast', '--no-rendering', world_file],
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE
     )
     while not out.poll():
         stdoutdata = out.stdout.readline()
         if stdoutdata:
-            sys.stdout.write(stdoutdata.decode('utf-8'))
+            print(stdoutdata.decode('utf-8'))
         else:
             break
 

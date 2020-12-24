@@ -17,6 +17,7 @@
 import os
 import shutil
 import subprocess
+from glob import glob
 from wb_animation_action.config import COMPETITION_TIMEOUT
 from wb_animation_action.utils.webots import load_config, compile_controllers
 from wb_animation_action.animation import generate_animation_for_world
@@ -29,11 +30,14 @@ def generate_competitor_preview(config):
 
     # Create a desired directory structure
     subprocess.check_output(f'git clone {competition_url} {base}', shell=True)
-    # os.makedirs(os.path.join(base, 'controllers/participant_controller'), exist_ok=True)
     shutil.copytree('.', os.path.join(base, 'controllers/participant_controller'))
 
     # Generate animation
     competition_config = load_config(os.path.join(base, 'webots.yaml'))
     compile_controllers(base=base)
     generate_animation_for_world(os.path.join(base, competition_config['world']), COMPETITION_TIMEOUT)
+
+    # Push
+    html_file = glob(os.path.join('/tmp/animation', '*.html')).pop()
+    os.rename(html_file, os.path.join('/tmp/animation', 'index.html'))
     push_directory_to_branch('/tmp/animation', clean=True)

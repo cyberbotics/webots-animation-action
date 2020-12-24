@@ -58,7 +58,7 @@
             // Time
             const d = new Date(0);
             d.setUTCSeconds(results.timestamp);
-            document.getElementById('timestamp').innerHTML = d;
+            document.getElementById('timestamp').innerHTML = `${d.getHours()}:${d.getMinutes()} ${d.getDay()}-${d.getMonth()}-${d.getFullYear()}`;
 
             // Rankings
             const rankingsNode = document.getElementById('rankings');
@@ -80,7 +80,7 @@
 
                 const previewNode = document.createElement('div');
                 const resultNode = document.createElement('div');
-                resultNode.setAttribute('class', 'result');
+                resultNode.setAttribute('class', 'overview');
                 resultNode.innerHTML = `
                     <div class="cell competitor-a">${getCompetitorNodeFromId(results.ranking, match.competitor_a)}</div>
                     <div class="cell result">${(match.winner == 'competitor_a') ? '1 - 0' : '0 - 1'}</div>
@@ -122,6 +122,10 @@
             padding: 0;
             margin: 0;
             font-family: 'Raleway', sans-serif;
+        }
+
+        p.update {
+            text-align: right;
         }
 
         a {
@@ -167,7 +171,7 @@
             flex-direction: column;
         }
 
-        #matches .result {
+        #matches .overview {
             display: flex;
             flex-direction: row;
         }
@@ -200,6 +204,7 @@
 
         #matches .result {
             text-align: center;
+            font-weight: bold;
         }
     </style>
 </head>
@@ -207,7 +212,7 @@
 <body>
     <div id="content">
         <h1>Rat's Life Leader Board</h1>
-        <p>Updated on <span id="timestamp"></span></p>
+        <p class="update">Updated on <span id="timestamp"></span></p>
 
         <div class="card rankings">
             <h2>Rankings</h2>

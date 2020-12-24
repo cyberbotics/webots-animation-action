@@ -33,7 +33,7 @@ def generate_competitor_preview(config):
     shutil.copytree('.', os.path.join(base, 'controllers/participant_controller'))
 
     # Generate animation
-    competition_config = load_config('webots.yaml')
+    competition_config = load_config(os.path.join(base, 'webots.yaml'))
     compile_controllers(base=base)
     generate_animation_for_world(os.path.join(base, competition_config['world']), COMPETITION_TIMEOUT)
     push_directory_to_branch('/tmp/animation', clean=True)

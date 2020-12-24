@@ -27,6 +27,7 @@ from distutils.dir_util import copy_tree
 from wb_animation_action.config import COMPETITION_TIMEOUT, RESOURCES_DIRECTORY, ADD_DUMMY_TO_COMPETITION
 from wb_animation_action.animation import generate_animation_for_world
 from wb_animation_action.utils.webots import compile_controllers
+from wb_animation_action.utils.github import accept_all_invitations
 
 
 class Competitor:
@@ -124,6 +125,9 @@ def generate_competition(competition_config):
     competitors = _get_competitors()
     matches = []
 
+    # Accept all invitations
+    accept_all_invitations(os.environ['BOT_PAT_KEY'])
+
     # Prepare directories
     os.makedirs('/tmp/output', exist_ok=True)
 
@@ -182,7 +186,7 @@ def generate_competition(competition_config):
 
     # Write results
     os.makedirs('/tmp/results', exist_ok=True)
-    results={
+    results = {
         'ranking': [c.get_dict() for c in competitors],
         'matches': matches
     }

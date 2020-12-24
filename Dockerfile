@@ -5,7 +5,8 @@ RUN apt-get update && \
         git \
         python3-yaml \
         python3-requests \
-        python3-distutils
+        python3-distutils \
+        python3-requests
 
 COPY wb_animation_action /usr/lib/python3/dist-packages/wb_animation_action
 COPY controllers ${WEBOTS_HOME}/resources/projects/controllers

@@ -15,6 +15,7 @@
 # limitations under the License.
 
 import os
+import sys
 from glob import glob
 import subprocess
 from wb_animation_action.config import RESOURCES_DIRECTORY
@@ -80,11 +81,20 @@ def generate_animation_for_world(world_file, duration, destination_directory='/t
         world_content = f.read()
     with open(world_file, 'w') as f:
         f.write(world_content + animation_recorder_vrml)
-    os.makedirs(destination_directory, exist_ok=True)
+    subprocess.check_output(['mkdir', '-p', destination_directory])
 
     # Runs simulation in Webots
-    out = subprocess.check_output(['xvfb-run', 'webots', '--stdout', '--stderr', '--batch', '--mode=fast', world_file])
-    print(out.decode('utf-8'))
+    out = subprocess.Popen(
+        ['xvfb-run', 'webots', '--stdout', '--stderr', '--batch', '--mode=fast', world_file],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE
+    )
+    while not out.poll():
+        stdoutdata = out.stdout.readline()
+        if stdoutdata:
+            sys.stdout.write(stdoutdata.decode('utf-8'))
+        else:
+            break
 
     # Removes `animation_recorder` controller
     with open(world_file, 'w') as f:

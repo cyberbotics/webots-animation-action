@@ -158,13 +158,13 @@ def generate_competition(competition_config):
         copy_tree(destination_directory, '/tmp/output')
 
         # Update ranks
-        winner=None
+        winner = None
         with open('/tmp/winner.txt', 'r') as f:
-            winner=f.read()
+            winner = f.read()
         if winner == 1:
             competitor_a.rank -= 1
             competitor_b.rank += 1
-            competitors=sorted(competitors, lambda c: c.rank)
+            competitors = sorted(competitors, lambda c: c.rank)
 
         # Store the results
         matches.append({

@@ -163,8 +163,18 @@ def generate_competition(competition_config):
 
         # Update ranks
         winner = None
-        with open('/tmp/winner.txt', 'r') as f:
-            winner = f.read()
+        points = []
+        with open('/tmp/results.txt', 'r') as f:
+            for line in f.readlines():
+                pair = line.split(':')
+                if len(pair) != 2 or line.startswith('#'):
+                    continue
+                key, value = pair
+                if key == 'winner':
+                    winner = int(value)
+                elif key == 'points':
+                    points = [float(x) for x in value.split(',')]
+
         if winner == 1:
             competitor_a.rank -= 1
             competitor_b.rank += 1
@@ -175,7 +185,8 @@ def generate_competition(competition_config):
             'id': match_directory,
             'competitor_a': str(competitor_a),
             'competitor_b': str(competitor_b),
-            'winner': 'competitor_b' if winner == 1 else 'competitor_a'
+            'winner': 'competitor_b' if winner == 1 else 'competitor_a',
+            'points': points
         })
 
         # Prepare next iteration

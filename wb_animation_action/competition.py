@@ -24,7 +24,7 @@ from glob import glob
 from shutil import copyfile
 import wb_animation_action.utils
 from distutils.dir_util import copy_tree
-from wb_animation_action.config import COMPETITION_TIMEOUT, RESOURCES_DIRECTORY
+from wb_animation_action.config import COMPETITION_TIMEOUT, RESOURCES_DIRECTORY, ADD_DUMMY_TO_COMPETITION
 from wb_animation_action.animation import generate_animation_for_world
 from wb_animation_action.utils.webots import compile_controllers
 
@@ -69,19 +69,22 @@ class Competitor:
 
 def _get_competitors():
     competitors = []
-    competitors.append(
-        Competitor(
-            git=None,
-            rank=0,
-            controller_name='dummy'
+    rank_start = 1
+    if ADD_DUMMY_TO_COMPETITION:
+        competitors.append(
+            Competitor(
+                git=None,
+                rank=rank_start,
+                controller_name='dummy'
+            )
         )
-    )
+        rank_start += 1
     with open('competitors.txt', 'r') as f:
         for rank, competitor_url in enumerate(f.readlines()):
             competitors.append(
                 Competitor(
                     git=competitor_url.strip(),
-                    rank=rank+1
+                    rank=rank+rank_start
                 )
             )
     return competitors

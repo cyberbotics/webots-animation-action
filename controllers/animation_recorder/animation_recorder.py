@@ -26,7 +26,7 @@ def main():
 
     robot = Supervisor()
     timestep = int(robot.getBasicTimeStep())
-    receiver = robot.getReceiver('receiver')
+    receiver = robot.getDevice('receiver')
     receiver.enable(timestep)
 
     robot.step(timestep)
@@ -47,6 +47,7 @@ def main():
         robot.step(timestep)
     print('The animation is saved')
     robot.simulationQuit(0)
+
 
 if __name__ == '__main__':
     main()

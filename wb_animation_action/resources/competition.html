@@ -4,7 +4,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' />
-    <title>Rat's Life Leader Board</title>
+    <title>Leader Board</title>
     <link type="text/css" href="https://www.cyberbotics.com/jquery-ui/1.11.4/jquery-ui.min.css" rel="stylesheet" />
     <link type="text/css" href="https://www.cyberbotics.com/wwi/R2020b/wwi.css" rel="stylesheet" />
     <script src="https://www.cyberbotics.com/jquery/1.11.3/jquery.min.js"></script>
@@ -55,6 +55,11 @@
         async function init() {
             const results = await loadResults();
 
+            // Title
+            const title = `Leader Board ${results.world_info.title}`;
+            document.title = title;
+            document.getElementById('title') = title;
+            
             // Time
             const d = new Date(0);
             d.setUTCSeconds(results.timestamp);
@@ -211,7 +216,7 @@
 
 <body>
     <div id="content">
-        <h1>Rat's Life Leader Board</h1>
+        <h1 id="title">Leader Board</h1>
         <p class="update">Updated on <span id="timestamp"></span></p>
 
         <div class="card rankings">

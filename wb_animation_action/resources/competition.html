@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' />
+    <title>Rat's Life Leader Board</title>
+    <link type="text/css" href="https://www.cyberbotics.com/jquery-ui/1.11.4/jquery-ui.min.css" rel="stylesheet" />
+    <link type="text/css" href="https://www.cyberbotics.com/wwi/R2020b/wwi.css" rel="stylesheet" />
+    <script src="https://www.cyberbotics.com/jquery/1.11.3/jquery.min.js"></script>
+    <script src="https://www.cyberbotics.com/jquery-ui/1.11.4/jquery-ui.min.js"></script>
+    <script src="https://www.cyberbotics.com/jquery-dialogextend/2.0.4/jquery.dialogextend.min.js"></script>
+    <script src="https://www.cyberbotics.com/ace/1.2.0/ace.js"></script>
+    <script src="https://www.cyberbotics.com/wwi/R2020b/webots.min.js"></script>
+    <script>
+        let view = null;
+        let activePreviewNode = null;
+
+        function showWorld(node, x3dFile, jsonFile) {
+            if (!view) {
+                view = new webots.View(node);
+            }
+
+            previousWorldNode = node;
+            view.open(x3dFile);
+            view.setAnimation(jsonFile, 'play', true);
+        }
+
+        function getCompetitorNode(competitor) {
+            if (competitor.username) {
+                return `<a target="_blank" href="https://github.com/${competitor.username}">${competitor.username}</a>/${competitor.repository_name}`;
+            }
+            return competitor.id;
+        }
+
+        function getCompetitorNodeFromId(competitors, id) {
+            const competitor = competitors.find(element => element.id == id);
+            return getCompetitorNode(competitor);
+        }
+
+        function hideActivePreview() {
+            if (activePreviewNode) {
+                activePreviewNode.style.height = '0';
+                activePreviewNode.innerHTML = null;
+                activePreviewNode = null;
+            }
+            if (view) {
+                view.resetSimulation();
+                view.destroyWorld();
+                view.close();
+                view = null;
+            }
+        }
+
+        async function init() {
+            const results = await loadResults();
+
+            // Time
+            const d = new Date(0);
+            d.setUTCSeconds(results.timestamp);
+            document.getElementById('timestamp').innerHTML = `${d.getHours()}:${d.getMinutes()} ${d.getDate()}-${d.getMonth() + 1}-${d.getFullYear()}`;
+
+            // Rankings
+            const rankingsNode = document.getElementById('rankings');
+            for (const competitor of results.ranking) {
+                rankingsNode.innerHTML += `<tr>
+                    <td>${competitor.rank}</td>
+                    <td>${getCompetitorNode(competitor)}</td>
+                </tr>`;
+            }
+
+            // Matches
+            const matchesNode = document.getElementById('matches');
+            for (const match of results.matches) {
+                const state = {
+                    visible: false
+                };
+                const rawNode = document.createElement('div');
+                rawNode.setAttribute('class', 'item');
+
+                const previewNode = document.createElement('div');
+                const resultNode = document.createElement('div');
+                resultNode.setAttribute('class', 'overview');
+                resultNode.innerHTML = `
+                    <div class="cell competitor-a">${getCompetitorNodeFromId(results.ranking, match.competitor_a)}</div>
+                    <div class="cell result">${(match.winner == 'competitor_a') ? '1 - 0' : '0 - 1'}</div>
+                    <div class="cell competitor-b">${getCompetitorNodeFromId(results.ranking, match.competitor_b)}</div>
+                `;
+                rawNode.appendChild(resultNode);
+                rawNode.appendChild(previewNode);
+                resultNode.addEventListener('click', (event) => {
+                    hideActivePreview();
+                    if (state.visible == false || activePreviewNode != previewNode) {
+                        previewNode.style.height = '500px';
+                        showWorld(previewNode, match.id + '.x3d', match.id + '.json');
+                        activePreviewNode = previewNode;
+                        state.visible = true;
+                    } else {
+                        state.visible = false;
+                    }
+                });
+
+                matchesNode.appendChild(rawNode);
+            }
+        }
+
+        function loadResults() {
+            return fetch('results.json', {
+                method: 'get'
+            }).then(response => response.json())
+        }
+
+        window.addEventListener('load', init, false);
+    </script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@500&display=swap" rel="stylesheet">
+    <style>
+        html,
+        body {
+            background-color: #bdc3c7;
+            color: #2c3e50;
+            padding: 0;
+            margin: 0;
+            font-family: 'Raleway', sans-serif;
+        }
+
+        p.update {
+            text-align: right;
+        }
+
+        a {
+            color: #2980b9;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        h1, h2 {
+            text-align: center;
+        }
+
+        th {
+            text-align: left;
+        }
+
+        .card {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card .matches {
+            flex: 2;
+        }
+
+        #content {
+            background-color: #ecf0f1;
+            padding: 12px;
+            max-width: 800px;
+            margin: 0 auto;
+            display: flex;
+            align-items: stretch;
+            flex-direction: column;
+            border-radius: 3px;
+        }
+
+        #matches {
+            display: flex;
+            flex: 1;
+            flex-direction: column;
+        }
+
+        #matches .overview {
+            display: flex;
+            flex-direction: row;
+        }
+
+        #matches .item {
+            border-radius: 3px;
+        }
+
+        #matches .item:hover {
+            cursor: pointer;
+            background-color: #bdc3c7;
+        }
+
+        #matches .item .cell {
+            padding: 8px;
+        }
+
+        #matches .competitor-a,
+        #matches .competitor-b {
+            flex: 3;
+        }
+
+        #matches .competitor-a {
+            text-align: right;
+        }
+
+        #matches .competitor-b {
+            text-align: left;
+        }
+
+        #matches .result {
+            text-align: center;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="content">
+        <h1>Rat's Life Leader Board</h1>
+        <p class="update">Updated on <span id="timestamp"></span></p>
+
+        <div class="card rankings">
+            <h2>Rankings</h2>
+            <table id="rankings">
+                <tr>
+                    <th>#</th>
+                    <th>competitor  </th>
+                </tr>
+            </table>
+        </div>
+
+        <div class="card matches">
+            <h2>Matches</h2>
+            <div id="matches"></div>
+        </div>
+    </div>
+</body>
+
+</html>

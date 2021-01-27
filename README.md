@@ -16,11 +16,6 @@ Here is a simple GitHub workflow snippet which utilizes the action:
 ```yaml
 name: Record animation
 
-on:
-  push:
-    branches: 
-      - master
-
 jobs:
   record:
     runs-on: ubuntu-latest
@@ -29,15 +24,24 @@ jobs:
         uses: actions/checkout@v2
       - name: Record and deploy the animation
         uses: cyberbotics/webots-animation-action@master
+        env: 
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```
 > You can save the snippet to e.g.: `.github/workflows/record_animation.yml`.
 
 ## Configuration
 
+### Demonstration
+
 You can create `webots.yaml` configuration file in the root of your repository to fine tune generated animations.
 If the file is not present, the action will automatically generate animations for all files according to the default configuration.
 
 ```yaml
+type: demo
+init: |
+  apt install -y \
+    python3-numpy \
+    python3-opencv
 animation:
   worlds:
     - file: worlds/tutorial_6.wbt
@@ -46,13 +50,50 @@ animation:
       duration: 10
 ```
 
-The world options are:
+The options are:
 
-| **name**   | **description**                             |
-|------------|---------------------------------------------|
-| `file`     | Path to world file (.wbt)                   |
-| `duration` | Animation duration in seconds (default 10s) |
+| **name**                      | **description**                                             |
+|-------------------------------|-------------------------------------------------------------|
+| `init`                        | Init hook used for configuruing and installing dependcies   |
+| `type`                        | Project type, can be `demo`, `competition` and `competitor` |
+| `animation`                   | Generates Webots animation and publishes to `gh-pages`      |
+| `animation.worlds[].file`     | Path to the world file (.wbt)                               |
+| `animation.worlds[].duration` | Animation duration in seconds (default 10s)                 |
 
-## Examples
-
+#### Example
 Check out [Webots Animation Template](https://github.com/cyberbotics/webots-animation-template/) repository.
+
+### Competition
+
+> **Warning**: Competitions are under heavy development!
+Documentation is not ready and we do not guarantee any backward compatibility.
+Please contact us directly if you want to set up a competition at `support@cyberbotics.com`.
+
+#### Organizer
+
+```yaml
+type: competition
+world: worlds/ratslife_round.wbt
+```
+
+| **name**                      | **description**                                             |
+|-------------------------------|-------------------------------------------------------------|
+| `init`                        | Init hook used for configuruing and installing dependcies   |
+| `type`                        | Project type, can be `demo`, `competition` and `competitor` |
+| `world`                       | A world to run the competition in                           |
+
+Limitations:
+- The opposing robots have to have `DEF` field set to `R1` and `R2`.
+
+#### Competitor
+
+```yaml
+type: competitor
+competition: https://github.com/username/competition
+```
+
+| **name**                      | **description**                                             |
+|-------------------------------|-------------------------------------------------------------|
+| `init`                        | Init hook used for configuruing and installing dependcies   |
+| `type`                        | Project type, can be `demo`, `competition` and `competitor` |
+| `competition`                 | GitHub URL to the competition                               |

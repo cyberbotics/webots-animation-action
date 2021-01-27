@@ -27,7 +27,7 @@ import wb_animation_action.utils
 from distutils.dir_util import copy_tree
 from wb_animation_action.config import COMPETITION_TIMEOUT, RESOURCES_DIRECTORY, ADD_DUMMY_TO_COMPETITION
 from wb_animation_action.animation import generate_animation_for_world
-from wb_animation_action.utils.webots import compile_controllers
+from wb_animation_action.utils.webots import compile_controllers, get_world_info
 from wb_animation_action.utils.github import accept_all_invitations
 
 
@@ -123,6 +123,7 @@ def _clone_controllers(competitors):
 
 def generate_competition(competition_config):
     world_file = competition_config['world']
+    world_info = get_world_info(world_file)
     competitors = _get_competitors()
     matches = []
 
@@ -200,7 +201,8 @@ def generate_competition(competition_config):
     results = {
         'ranking': [c.get_dict() for c in competitors],
         'matches': matches,
-        'timestamp': time.time()
+        'timestamp': time.time(),
+        'world_info': world_info
     }
     with open(os.path.join('/tmp/results', 'results.json'), 'w') as f:
         f.write(json.dumps(results))

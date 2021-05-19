@@ -28,7 +28,7 @@ def _init():
     result = subprocess.run('git config --list | grep user.name', shell=True, check=False)
     if result.returncode != 0:
         email = '{}+{}@users.noreply.github.com'.format(user_info['id'], username)
-        subprocess.check_output(['git', 'config', '--global', 'user.name', user_info['name']])
+        subprocess.check_output(['git', 'config', '--global', 'user.name', user_info['name'] or username])
         subprocess.check_output(['git', 'config', '--global', 'user.email', email])
 
 

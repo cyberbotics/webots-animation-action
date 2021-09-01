@@ -10,20 +10,16 @@
     <script src="https://www.cyberbotics.com/jquery/1.11.3/jquery.min.js"></script>
     <script src="https://www.cyberbotics.com/jquery-ui/1.11.4/jquery-ui.min.js"></script>
     <script src="https://www.cyberbotics.com/jquery-dialogextend/2.0.4/jquery.dialogextend.min.js"></script>
-    <script src="https://www.cyberbotics.com/ace/1.2.0/ace.js"></script>
-    <script src="https://www.cyberbotics.com/wwi/R2020b/webots.min.js"></script>
+    <script type="module" src="/webots/resources/web/wwi/WebotsAnimation.js"></script>
     <script>
         let view = null;
         let activePreviewNode = null;
+        let webotsAnimation;
 
         function showWorld(node, x3dFile, jsonFile) {
-            if (!view) {
-                view = new webots.View(node);
-            }
-
-            previousWorldNode = node;
-            view.open(x3dFile);
-            view.setAnimation(jsonFile, 'play', true);
+          webotsAnimation.setX3dName(x3dFile);
+          webotsAnimation.setJsonName(jsonFile);
+          webotsAnimation.play();
         }
 
         function getCompetitorNode(competitor) {
@@ -41,14 +37,8 @@
         function hideActivePreview() {
             if (activePreviewNode) {
                 activePreviewNode.style.height = '0';
-                activePreviewNode.innerHTML = null;
+                //activePreviewNode.innerHTML = null;
                 activePreviewNode = null;
-            }
-            if (view) {
-                view.resetSimulation();
-                view.destroyWorld();
-                view.close();
-                view = null;
             }
         }
 
@@ -82,17 +72,24 @@
                 const resultNode = document.createElement('div');
                 resultNode.setAttribute('class', 'overview');
                 resultNode.innerHTML = `
-                    <div class="cell competitor-a">${getCompetitorNodeFromId(results.ranking, match.competitor_a)}</div>
-                    <div class="cell result">${(match.winner == 'competitor_a') ? '1 - 0' : '0 - 1'}</div>
-                    <div class="cell competitor-b">${getCompetitorNodeFromId(results.ranking, match.competitor_b)}</div>
+                    <div class="cell world id">World ${match.round}</div>
+                    <div class="cell competitor">${getCompetitorNodeFromId(results.ranking, match.competitor)}</div>
+                    <div class="cell points">${match.points} points</div>
                 `;
                 rawNode.appendChild(resultNode);
                 rawNode.appendChild(previewNode);
                 resultNode.addEventListener('click', (event) => {
                     hideActivePreview();
                     if (state.visible == false || activePreviewNode != previewNode) {
-                        previewNode.style.height = '500px';
-                        showWorld(previewNode, match.id + '.x3d', match.id + '.json');
+                        previewNode.style.height = '500px'
+                        if(!webotsAnimation)
+                          webotsAnimation = document.getElementsByTagName('webots-animation')[0]
+
+                        if (webotsAnimation && webotsAnimation.parentNode)
+                          webotsAnimation.parentNode.removeChild(webotsAnimation);
+                        previewNode.append(webotsAnimation);
+                        console.log(match.id)
+                        showWorld(previewNode, 'https://raw.githubusercontent.com/cesc-folch/pal-webots-competition-organizer/gh-pages/' + match.id, 'https://raw.githubusercontent.com/cesc-folch/pal-webots-competition-organizer/gh-pages/' + match.id);
                         activePreviewNode = previewNode;
                         state.visible = true;
                     } else {
@@ -105,7 +102,7 @@
         }
 
         function loadResults() {
-            return fetch('results.json', {
+            return fetch('https://raw.githubusercontent.com/cesc-folch/pal-webots-competition-organizer/gh-pages/results.json', {
                 method: 'get'
             }).then(response => response.json())
         }
@@ -223,7 +220,7 @@
                 </tr>
             </table>
         </div>
-
+        <webots-animation></webots-animation>
         <div class="card matches">
             <h2>Matches</h2>
             <div id="matches"></div>

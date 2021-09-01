@@ -10,13 +10,21 @@
     <script src="https://www.cyberbotics.com/jquery/1.11.3/jquery.min.js"></script>
     <script src="https://www.cyberbotics.com/jquery-ui/1.11.4/jquery-ui.min.js"></script>
     <script src="https://www.cyberbotics.com/jquery-dialogextend/2.0.4/jquery.dialogextend.min.js"></script>
-    <script type="module" src="/webots/resources/web/wwi/WebotsAnimation.js"></script>
+    <script type="module" src="/webots2/resources/web/wwi/WebotsAnimation.js"></script>
     <script>
         let view = null;
         let activePreviewNode = null;
-        let webotsAnimation;
+        let webotsAnimation, animationDiv;
 
         function showWorld(node, x3dFile, jsonFile) {
+          if(!webotsAnimation)
+            webotsAnimation = document.getElementsByTagName('webots-animation')[0];
+            if (!webotsAnimation)
+              return;
+
+          if(webotsAnimation.active())
+            webotsAnimation.close();
+
           webotsAnimation.setX3dName(x3dFile);
           webotsAnimation.setJsonName(jsonFile);
           webotsAnimation.play();
@@ -37,7 +45,6 @@
         function hideActivePreview() {
             if (activePreviewNode) {
                 activePreviewNode.style.height = '0';
-                //activePreviewNode.innerHTML = null;
                 activePreviewNode = null;
             }
         }
@@ -81,13 +88,11 @@
                 resultNode.addEventListener('click', (event) => {
                     hideActivePreview();
                     if (state.visible == false || activePreviewNode != previewNode) {
-                        previewNode.style.height = '500px'
-                        if(!webotsAnimation)
-                          webotsAnimation = document.getElementsByTagName('webots-animation')[0]
+                        if(!animationDiv)
+                            animationDiv = document.getElementsByClassName('animation')[0];
 
-                        if (webotsAnimation && webotsAnimation.parentNode)
-                          webotsAnimation.parentNode.removeChild(webotsAnimation);
-                        previewNode.append(webotsAnimation);
+                        animationDiv.style.visibility = 'visible';
+
                         console.log(match.id)
                         showWorld(previewNode, 'https://raw.githubusercontent.com/cesc-folch/pal-webots-competition-organizer/gh-pages/' + match.id, 'https://raw.githubusercontent.com/cesc-folch/pal-webots-competition-organizer/gh-pages/' + match.id);
                         activePreviewNode = previewNode;
@@ -107,6 +112,30 @@
             }).then(response => response.json())
         }
 
+        function hideAnimation() {
+          if (!webotsAnimation || !animationDiv)
+            return;
+          webotsAnimation.close()
+          animationDiv.style.visibility = 'hidden';
+        }
+        //Detect if we clicked outside of the animation player
+        document.addEventListener("click", (evt) => {
+          if(!animationDiv)
+            return;
+          let targetEl = evt.target;
+          console.log(targetEl)
+
+          do {
+            if(targetEl == animationDiv || targetEl.className === 'item') {
+              // This is a click inside, does nothing, just return.
+              return;
+            }
+            // Go up the DOM
+            targetEl = targetEl.parentNode;
+          } while (targetEl);
+          // This is a click outside.
+          hideAnimation();
+        });
         window.addEventListener('load', init, false);
     </script>
 
@@ -142,6 +171,9 @@
             text-align: left;
         }
 
+        webots-animation {
+          height: 100% - 40px;
+        }
         .card {
             display: flex;
             flex-direction: column;
@@ -151,6 +183,14 @@
             flex: 2;
         }
 
+        .animation {
+          position: absolute;
+          height: 70%;
+          width: 70%;
+          top: 15%;
+          left: 15%;
+          visibility: hidden;
+        }
         #content {
             background-color: #ecf0f1;
             padding: 12px;
@@ -203,6 +243,7 @@
             text-align: center;
             font-weight: bold;
         }
+
     </style>
 </head>
 
@@ -220,9 +261,11 @@
                 </tr>
             </table>
         </div>
-        <webots-animation></webots-animation>
+        <div class="animation">
+          <webots-animation></webots-animation>
+        </div>
         <div class="card matches">
-            <h2>Matches</h2>
+            <h2 style="height:500px">Matches</h2>
             <div id="matches"></div>
         </div>
     </div>

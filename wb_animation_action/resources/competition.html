@@ -16,7 +16,7 @@
         let webotsAnimation;
         let animationDisplayed = false;
 
-        function showWorld(x3dFile, jsonFile) {
+        function showWorld(filename) {
           if (!webotsAnimation)
             return;
 
@@ -24,8 +24,7 @@
             webotsAnimation.close();
 
           animationDisplayed = true;
-          webotsAnimation.setX3dName(x3dFile);
-          webotsAnimation.setJsonName(jsonFile);
+          webotsAnimation.setNames(filename);
           webotsAnimation.play();
         }
 
@@ -81,7 +80,7 @@
 
                     webotsAnimation.style.visibility = 'visible';
                     document.getElementById('overlay').style.visibility = 'visible';
-                    showWorld(match.id, match.id);
+                    showWorld(match.id);
                 });
 
                 matchesNode.appendChild(rawNode);

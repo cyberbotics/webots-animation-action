@@ -5,25 +5,22 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' />
     <title>Rat's Life Leader Board</title>
-    <link type="text/css" href="https://www.cyberbotics.com/jquery-ui/1.11.4/jquery-ui.min.css" rel="stylesheet" />
-    <link type="text/css" href="https://www.cyberbotics.com/wwi/R2020b/wwi.css" rel="stylesheet" />
-    <script src="https://www.cyberbotics.com/jquery/1.11.3/jquery.min.js"></script>
-    <script src="https://www.cyberbotics.com/jquery-ui/1.11.4/jquery-ui.min.js"></script>
-    <script src="https://www.cyberbotics.com/jquery-dialogextend/2.0.4/jquery.dialogextend.min.js"></script>
-    <script src="https://www.cyberbotics.com/ace/1.2.0/ace.js"></script>
-    <script src="https://www.cyberbotics.com/wwi/R2020b/webots.min.js"></script>
+    <script type="module" src="https://www.cyberbotics.com/wwi/R2021c/WebotsAnimation.js"></script>
     <script>
         let view = null;
-        let activePreviewNode = null;
+        let webotsAnimation;
+        let animationDisplayed = false;
 
-        function showWorld(node, x3dFile, jsonFile) {
-            if (!view) {
-                view = new webots.View(node);
-            }
+        function showWorld(filename) {
+          if (!webotsAnimation)
+            return;
 
-            previousWorldNode = node;
-            view.open(x3dFile);
-            view.setAnimation(jsonFile, 'play', true);
+          if(webotsAnimation.active())
+            webotsAnimation.close();
+
+          animationDisplayed = true;
+          webotsAnimation.setNames(filename);
+          webotsAnimation.play();
         }
 
         function getCompetitorNode(competitor) {
@@ -36,20 +33,6 @@
         function getCompetitorNodeFromId(competitors, id) {
             const competitor = competitors.find(element => element.id == id);
             return getCompetitorNode(competitor);
-        }
-
-        function hideActivePreview() {
-            if (activePreviewNode) {
-                activePreviewNode.style.height = '0';
-                activePreviewNode.innerHTML = null;
-                activePreviewNode = null;
-            }
-            if (view) {
-                view.resetSimulation();
-                view.destroyWorld();
-                view.close();
-                view = null;
-            }
         }
 
         async function init() {
@@ -78,7 +61,6 @@
                 const rawNode = document.createElement('div');
                 rawNode.setAttribute('class', 'item');
 
-                const previewNode = document.createElement('div');
                 const resultNode = document.createElement('div');
                 resultNode.setAttribute('class', 'overview');
                 resultNode.innerHTML = `
@@ -87,17 +69,13 @@
                     <div class="cell competitor-b">${getCompetitorNodeFromId(results.ranking, match.competitor_b)}</div>
                 `;
                 rawNode.appendChild(resultNode);
-                rawNode.appendChild(previewNode);
                 resultNode.addEventListener('click', (event) => {
-                    hideActivePreview();
-                    if (state.visible == false || activePreviewNode != previewNode) {
-                        previewNode.style.height = '500px';
-                        showWorld(previewNode, match.id + '.x3d', match.id + '.json');
-                        activePreviewNode = previewNode;
-                        state.visible = true;
-                    } else {
-                        state.visible = false;
-                    }
+                  if(!webotsAnimation)
+                    webotsAnimation = document.getElementsByTagName('webots-animation')[0];
+
+                    webotsAnimation.style.visibility = 'visible';
+                    document.getElementById('overlay').style.visibility = 'visible';
+                    showWorld(match.id);
                 });
 
                 matchesNode.appendChild(rawNode);
@@ -109,6 +87,43 @@
                 method: 'get'
             }).then(response => response.json())
         }
+
+        function hideAnimation() {
+          if (!webotsAnimation || !animationDisplayed)
+            return;
+
+          webotsAnimation.close()
+          webotsAnimation.style.visibility = 'hidden';
+          document.getElementById('overlay').style.visibility = 'hidden';
+          animationDisplayed = false;
+        }
+        // Detect if we clicked outside of the animation player
+        document.addEventListener("click", (evt) => {
+          if(!webotsAnimation)
+            return;
+          let targetEl = evt.target;
+          do {
+            if(targetEl == webotsAnimation || targetEl.className === 'item') {
+              // This is a click inside, does nothing, just return.
+              return;
+            }
+            // Go up the DOM
+            targetEl = targetEl.parentNode;
+          } while (targetEl);
+          // This is a click outside.
+          hideAnimation();
+        });
+
+        window.addEventListener("resize", () => {
+          if (document.body.clientWidth < 800){
+            document.getElementsByTagName('webots-animation')[0].style.width = "100%";
+            document.getElementsByTagName('webots-animation')[0].style.left = "0%";
+          }
+          else {
+            document.getElementsByTagName('webots-animation')[0].style.width = "80%";
+            document.getElementsByTagName('webots-animation')[0].style.left = "10%";
+          }
+        })
 
         window.addEventListener('load', init, false);
     </script>
@@ -145,6 +160,15 @@
             text-align: left;
         }
 
+        webots-animation {
+          z-index: 2;
+          position: absolute;
+          height: 80%;
+          width: 80%;
+          top: 10%;
+          left: 10%;
+          visibility: hidden;
+        }
         .card {
             display: flex;
             flex-direction: column;
@@ -152,6 +176,18 @@
 
         .card .matches {
             flex: 2;
+        }
+
+        .overlay {
+          z-index: 1;
+          position: absolute;
+          height: 100%;
+          width: 100%;
+          background-color: rgba(0, 0, 0, 0.6);
+          top: 0%;
+          left: 0%;
+          pointer-events: none;
+          visibility: hidden;
         }
 
         #content {
@@ -206,6 +242,7 @@
             text-align: center;
             font-weight: bold;
         }
+
     </style>
 </head>
 
@@ -223,12 +260,13 @@
                 </tr>
             </table>
         </div>
-
         <div class="card matches">
             <h2>Matches</h2>
             <div id="matches"></div>
         </div>
     </div>
+    <webots-animation></webots-animation>
+    <div id="overlay" class="overlay"></div>
 </body>
 
 </html>

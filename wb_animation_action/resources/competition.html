@@ -10,7 +10,7 @@
     <script src="https://www.cyberbotics.com/jquery/1.11.3/jquery.min.js"></script>
     <script src="https://www.cyberbotics.com/jquery-ui/1.11.4/jquery-ui.min.js"></script>
     <script src="https://www.cyberbotics.com/jquery-dialogextend/2.0.4/jquery.dialogextend.min.js"></script>
-    <script type="module" src="/webots2/resources/web/wwi/WebotsAnimation.js"></script>
+    <script type="module" src="https://www.cyberbotics.com/wwi/R2021c/WebotsAnimation.js"></script>
     <script>
         let view = null;
         let webotsAnimation;
@@ -70,9 +70,9 @@
                 const resultNode = document.createElement('div');
                 resultNode.setAttribute('class', 'overview');
                 resultNode.innerHTML = `
-                    <div class="cell world id">World ${match.round}</div>
-                    <div class="cell competitor">${getCompetitorNodeFromId(results.ranking, match.competitor)}</div>
-                    <div class="cell points">${match.points} points</div>
+                    <div class="cell competitor-a">${getCompetitorNodeFromId(results.ranking, match.competitor_a)}</div>
+                    <div class="cell result">${(match.winner == 'competitor_a') ? '1 - 0' : '0 - 1'}</div>
+                    <div class="cell competitor-b">${getCompetitorNodeFromId(results.ranking, match.competitor_b)}</div>
                 `;
                 rawNode.appendChild(resultNode);
                 resultNode.addEventListener('click', (event) => {
@@ -81,8 +81,7 @@
 
                     webotsAnimation.style.visibility = 'visible';
                     document.getElementById('overlay').style.visibility = 'visible';
-
-                    showWorld('https://raw.githubusercontent.com/cesc-folch/pal-webots-competition-organizer/gh-pages/' + match.id, 'https://raw.githubusercontent.com/cesc-folch/pal-webots-competition-organizer/gh-pages/' + match.id);
+                    showWorld(match.id, match.id);
                 });
 
                 matchesNode.appendChild(rawNode);
@@ -90,7 +89,7 @@
         }
 
         function loadResults() {
-            return fetch('https://raw.githubusercontent.com/cesc-folch/pal-webots-competition-organizer/gh-pages/results.json', {
+            return fetch('results.json', {
                 method: 'get'
             }).then(response => response.json())
         }
@@ -267,12 +266,12 @@
                 </tr>
             </table>
         </div>
-        <webots-animation></webots-animation>
         <div class="card matches">
             <h2>Matches</h2>
             <div id="matches"></div>
         </div>
     </div>
+    <webots-animation></webots-animation>
     <div id="overlay" class="overlay"></div>
 </body>
 

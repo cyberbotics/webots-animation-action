@@ -122,7 +122,6 @@
         });
 
         window.addEventListener("resize", () => {
-          console.log(document.body.clientWidth)
           if (document.body.clientWidth < 800){
             document.getElementsByTagName('webots-animation')[0].style.width = "100%";
             document.getElementsByTagName('webots-animation')[0].style.left = "0%";

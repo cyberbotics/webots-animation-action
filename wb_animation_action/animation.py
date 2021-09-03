@@ -146,7 +146,7 @@ def generate_animation(animation_config):
     animation_directories = _get_animation_directories()
     for path in glob('*'):
         if path not in _get_animation_directories() + ['index.html']:
-            if os.isdir(path):
+            if os.path.isdir(path):
                 shutil.rmtree(path)
             else:
                 os.remove(path)

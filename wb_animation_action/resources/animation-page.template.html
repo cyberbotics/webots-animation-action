@@ -5,8 +5,6 @@
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>Webots Simulation Preview</title>
-  <link type="text/css" href="https://www.cyberbotics.com/jquery-ui/1.11.4/jquery-ui.min.css" rel="stylesheet" />
-  <link type="text/css" href="https://www.cyberbotics.com/wwi/R2020b/wwi.css" rel="stylesheet" />
   <style>
     html,
     body {
@@ -16,52 +14,46 @@
       width: 100%;
       display: flex;
       flex-flow: row;
+      color: #333;
     }
 
-    #view3d {
-      flex: 1;
+    a, a:visited {
+      color: #0a3d62;
+      text-decoration: none;
+    }
+
+    #webots-view {
+      width: calc(100% - 220px);
       background-color: black;
-      margin-bottom: -29px;
     }
 
     #sidebar {
+      flex: 1;
       padding: 12px;
-      max-width: 220px;
     }
 
     .simulation-item {
-      margin: 12px 0;
+      margin: 24px 0;
     }
 
     .simulation-item h3,
     .simulation-item p {
       margin: 0;
+      padding: 5px 0;
     }
   </style>
-  <script src="https://www.cyberbotics.com/jquery/1.11.3/jquery.min.js"></script>
-  <script src="https://www.cyberbotics.com/jquery-ui/1.11.4/jquery-ui.min.js"></script>
-  <script src="https://www.cyberbotics.com/jquery-dialogextend/2.0.4/jquery.dialogextend.min.js"></script>
-  <script src="https://www.cyberbotics.com/ace/1.2.0/ace.js"></script>
-  <script src="https://www.cyberbotics.com/wwi/R2020b/webots.min.js"></script>
+  <script type="module" src="https://www.cyberbotics.com/wwi/R2021c/WebotsAnimation.js"></script>
   <script>
     const WORLD_LIST = { WORLD_LIST_PLACEHOLDER };
     let view = null;
     let currentWorld = null;
 
     function showWorld(worldName) {
-      if (view) {
-        view.resetSimulation();
-        view.destroyWorld();
+      if (view.active())
         view.close();
-        view = null;
-        document.getElementById("view3d").innerHTML = null;
-      }
-      if (!view) {
-        view = new webots.View(document.getElementById("view3d"));
-      }
-
-      view.open(worldName + ".x3d");
-      view.setAnimation(worldName + ".json", "play", true);
+      
+      view.setNames(worldName);
+      view.play();
     }
 
     function onWorldClicked(e, worldName) {
@@ -107,6 +99,7 @@
     }
 
     function init() {
+      view = document.getElementsByTagName('webots-animation')[0];
       createSidebarItems();
       showWorldFromHash();
     }
@@ -115,16 +108,15 @@
       showWorldFromHash();
     }
 
-    window.addEventListener("load", init, false);
+    window.addEventListener('load', init, false);
     window.addEventListener('hashchange', hashChanged);
-
-    if (location.protocol == "file:" && (!!window.chrome && !!window.chrome.webstore))
-      alert("Webots HTML5 Models and Animations cannot be loaded locally on Google Chrome, as Chrome does not support cross-origin requests using the file:// protocol.");
   </script>
 </head>
 
 <body>
-  <div id="view3d"></div>
+  <div id="webots-view">
+    <webots-animation></webots-animation>
+  </div>
   <div id="sidebar">
     <h2>List of simulations</h2>
   </div>

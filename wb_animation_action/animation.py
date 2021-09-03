@@ -18,6 +18,7 @@ import os
 import sys
 import shutil
 from glob import glob
+from pathlib import Path
 import subprocess
 from wb_animation_action.config import RESOURCES_DIRECTORY
 import wb_animation_action.utils.git
@@ -143,7 +144,7 @@ def generate_animation(animation_config):
     
     # Delete files that are not necessary
     animation_directories = _get_animation_directories()
-    for path in glob('*'):
+    for path in Path('').glob('*'):
         if path not in animation_directories + ['index.html']:
             if os.path.isdir(path):
                 shutil.rmtree(path)

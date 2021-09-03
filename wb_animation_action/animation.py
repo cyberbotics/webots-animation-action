@@ -16,6 +16,7 @@
 
 import os
 import sys
+import shutil
 from glob import glob
 import subprocess
 from wb_animation_action.config import RESOURCES_DIRECTORY
@@ -43,6 +44,14 @@ def _generate_animation_recorder_vrml(duration, output):
     )
 
 
+def _get_animation_directories():
+    directories = []
+    for path in glob('*'):
+        if os.path.isdir(path) and os.path.isfile(os.path.join(path, 'index.html')):
+            directories.append(path)
+    return directories
+
+
 def _generate_animation_page(worlds_config):
     template = None
 
@@ -60,7 +69,7 @@ def _generate_animation_page(worlds_config):
 def _generate_branch_index():
     with open(os.path.join(RESOURCES_DIRECTORY, 'animation-list.template.html'), 'r') as f:
         template = f.read()
-    worlds = [f'<li><a href="{path}">{path}</a></li>' for path in glob('*') if os.path.isdir(path)]
+    worlds = [f'<li><a href="{path}">{path}</a></li>' for path in _get_animation_directories()]
     template = template.replace('{ BRANCH_LIST_PLACEHOLDER }', '\n'.join(worlds))
     with open('index.html', 'w') as f:
         f.write(template)
@@ -132,3 +141,12 @@ def generate_animation(animation_config):
 
     # Update branch index list (we assume we are in `gh-pages` branch)
     _generate_branch_index()
+    
+    # Delete files that are not necessary
+    animation_directories = _get_animation_directories()
+    for path in glob('*'):
+        if path not in _get_animation_directories() + ['index.html']:
+            if os.isdir(path)
+                shutil.rmtree(path)
+            else:
+                os.remove(path)

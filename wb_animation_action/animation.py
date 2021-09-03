@@ -73,7 +73,6 @@ def _generate_branch_index():
     template = template.replace('{ BRANCH_LIST_PLACEHOLDER }', '\n'.join(worlds))
     with open('index.html', 'w') as f:
         f.write(template)
-    wb_animation_action.utils.git.push()
 
 
 def generate_animation_for_world(world_file, duration, destination_directory='/tmp/animation'):
@@ -145,8 +144,10 @@ def generate_animation(animation_config):
     # Delete files that are not necessary
     animation_directories = _get_animation_directories()
     for path in glob('*'):
-        if path not in _get_animation_directories() + ['index.html']:
+        if path not in animation_directories + ['index.html']:
             if os.path.isdir(path):
                 shutil.rmtree(path)
             else:
                 os.remove(path)
+
+    wb_animation_action.utils.git.push()

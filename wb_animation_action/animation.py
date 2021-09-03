@@ -145,7 +145,7 @@ def generate_animation(animation_config):
     # Delete files that are not necessary
     animation_directories = _get_animation_directories()
     for path in Path('').glob('*'):
-        if path not in animation_directories + ['index.html']:
+        if path not in animation_directories + ['index.html', '.git']:
             if os.path.isdir(path):
                 shutil.rmtree(path)
             else:

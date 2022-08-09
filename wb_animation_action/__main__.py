@@ -38,8 +38,7 @@ def main():
         print('You have to specify `type` parameter in `webots.yaml` and set it to `benchmark`')
 
     # generate animation from benchmark
-    worlds = {'file': 'worlds/*.wbt', 'duration': 10}
-    generate_animation(worlds)
+    generate_animation(config['animation'])
 
 
 if __name__ == "__main__":

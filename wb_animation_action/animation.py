@@ -110,26 +110,19 @@ def generate_animation_for_world(world_file, duration, destination_directory='/t
         f.write(world_content)
 
 
-def generate_animation(animation_config):
+def generate_animation(worlds):
     """Generates animation for all worlds based on the given content."""
 
-    # Add default config
-    if 'worlds' not in animation_config:
-        animation_config['worlds'] = {
-            'file': 'worlds/*.wbt',
-            'duration': 10
-        }
-
     # Expand world list (handle regex expressions)
-    animation_config['worlds'] = expand_world_list(animation_config['worlds'])
+    worlds = expand_world_list(worlds)
 
     # Generate animation for each world
     compile_controllers()
-    for world_config in animation_config['worlds']:
+    for world_config in worlds:
         generate_animation_for_world(world_config['file'], world_config['duration'])
 
     # Generates list of animations
-    _generate_animation_page(animation_config['worlds'])
+    _generate_animation_page(worlds)
 
     # Push animation to gh-pages
     current_branch_name = get_current_branch_name()

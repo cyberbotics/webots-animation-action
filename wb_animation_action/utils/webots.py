@@ -85,14 +85,15 @@ def compile_controllers(base='.'):
                 subprocess.check_output(f'cd {path} && make', shell=True)
 
 
-def load_config(file='webots.yaml'):
+def load_config(files=['webots.yaml', 'webots.yml']):
     """Load config from webots.yaml located in the repository root."""
 
     config = None
-    print('os.path.basename: ', os.path.basename)
-    if os.path.isfile(file):
-        with open(file, 'r') as f:
-            config = yaml.load(f.read(), Loader=yaml.FullLoader) or {}
+    for file in files:
+      if os.path.isfile(file):
+          with open(file, 'r') as f:
+              config = yaml.load(f.read(), Loader=yaml.FullLoader) or {}
+          break
     if config is None:
         print('Cannot load `webots.yaml`')
         sys.exit(1)

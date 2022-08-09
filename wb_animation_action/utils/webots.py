@@ -89,6 +89,7 @@ def load_config(file='webots.yaml'):
     """Load config from webots.yaml located in the repository root."""
 
     config = None
+    print('os.path: ', os.path)
     if os.path.isfile(file):
         with open(file, 'r') as f:
             config = yaml.load(f.read(), Loader=yaml.FullLoader) or {}

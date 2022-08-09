@@ -58,6 +58,7 @@ def push_directory_to_branch(source_directory, destination_directory='.', destin
 
     _init()
 
+    subprocess.check_output(['git', 'config', '--global', '--add', 'safe.directory', '/github/workspace'])
     subprocess.check_output(['git', 'reset', '--hard'])
     subprocess.check_output(f'git checkout {destination_branch} || git checkout -b {destination_branch}', shell=True)
 

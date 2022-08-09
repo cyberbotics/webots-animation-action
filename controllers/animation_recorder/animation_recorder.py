@@ -19,13 +19,10 @@ from controller import Supervisor
 
 
 def main():
-    """ parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser()
     parser.add_argument('--duration', type=float, default=10, help='Duration of the animation in seconds')
     parser.add_argument('--output', default='../../animation/index.html', help='Path at which the animation will be saved')
-    args = parser.parse_args() """
-
-    output = '../../storage/index.html'
-    duration = 10
+    args = parser.parse_args()
 
     robot = Supervisor()
     timestep = int(robot.getBasicTimeStep())
@@ -33,11 +30,11 @@ def main():
     receiver.enable(timestep)
 
     robot.step(timestep)
-    robot.animationStartRecording(output)
+    robot.animationStartRecording(args.output)
 
     step_i = 0
     done = False
-    n_steps = (1000 * duration) / robot.getBasicTimeStep()
+    n_steps = (1000 * args.duration) / robot.getBasicTimeStep()
     while not done and robot.step(timestep) != -1 and step_i < n_steps:
         step_i += 1
         if receiver.getQueueLength() > 0:
